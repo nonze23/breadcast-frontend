@@ -1,0 +1,233 @@
+/*로그인 스타일*/
+
+.signin-container {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    sans-serif;
+}
+
+/* Left Side */
+.signin-page-left {
+  flex: 1;
+  background: linear-gradient(180deg, #f5e6d3 0%, #ead5bd 100%);
+  display: flex;
+  flex-direction: column;
+  padding: 30px 50px;
+  position: relative;
+}
+
+.logo-button {
+  background-color: #a67c52;
+  color: white;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  align-self: flex-start;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s;
+}
+
+.logo-button:hover {
+  background-color: #8f6a45;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+}
+
+.left-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+  text-align: center;
+}
+
+.left-content h2 {
+  font-size: 26px;
+  font-weight: 700;
+  color: #2d2d2d;
+  margin: 0 0 8px 0;
+  line-height: 1.4;
+}
+
+.left-content p {
+  font-size: 15px;
+  color: #666666;
+  margin: 0 0 40px 0;
+}
+
+/* Bread Illustration */
+.bread-illustration {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.bread-img {
+  width: 100%;
+  max-width: 380px;
+  height: auto;
+}
+
+/* Right Side */
+.signin-page-right {
+  flex: 1;
+  background: #fdfaf7;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 60px 80px;
+}
+
+.signin-page-right-top {
+  text-align: left;
+  margin-bottom: 40px;
+  width: 100%;
+  max-width: 400pxl;
+}
+
+.signin-page-right-top h1 {
+  font-size: 40px;
+  font-weight: 700;
+  color: #a67c52;
+  margin: 0 0 12px 0;
+  line-height: 1.2;
+}
+
+.signin-page-right-top p {
+  font-size: 14px;
+  color: #666666;
+  margin: 0;
+}
+
+.signin-form {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.signin-input {
+  width: 100%;
+  padding: 16px 18px;
+  border: 1px solid #e8ddd0;
+  border-radius: 8px;
+  font-size: 14px;
+  background: white;
+  color: #333;
+  transition: all 0.2s;
+  box-sizing: border-box;
+}
+
+.signin-input::placeholder {
+  color: #aaaaaa;
+}
+
+.signin-input:focus {
+  outline: none;
+  border-color: #a67c52;
+  box-shadow: 0 0 0 2px rgba(166, 124, 82, 0.1);
+}
+
+.signin-button {
+  width: 100%;
+  padding: 16px;
+  background-color: #a67c52;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 6px;
+  transition: all 0.2s;
+  box-sizing: border-box;
+}
+
+.signin-button:hover {
+  background-color: #8f6a45;
+  transform: translateY(-1px);
+}
+
+.signin-button:active {
+  transform: translateY(0);
+}
+
+.signup-button {
+  text-align: center;
+  width: 100%;
+  padding: 16px;
+  background-color: white;
+  color: #a67c52;
+  border: 2px solid #a67c52;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-sizing: border-box;
+  text-decoration-line: none;
+}
+
+.signup-button:hover {
+  background-color: #a67c52;
+  color: white;
+  transform: translateY(-1px);
+}
+
+.signup-button:active {
+  transform: translateY(0);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .signin-container {
+    flex-direction: column;
+  }
+
+  .signin-page-left,
+  .signin-page-right {
+    flex: none;
+    min-height: 50vh;
+  }
+
+  .left-content h2 {
+    font-size: 22px;
+  }
+
+  .signin-page-right-top h1 {
+    font-size: 34px;
+  }
+}
+
+@media (max-width: 768px) {
+  .signin-page-left {
+    padding: 25px 30px;
+  }
+
+  .signin-page-right {
+    padding: 40px 30px;
+  }
+
+  .signin-form {
+    max-width: 100%;
+  }
+
+  .left-content h2 {
+    font-size: 20px;
+  }
+
+  .bread-illustration {
+    max-width: 300px;
+  }
+}

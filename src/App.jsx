@@ -7,15 +7,9 @@ import HomePage from "./pages/HomePage";
 import MyPage from "./pages/MyPage";
 import SearchPage from "./pages/SearchPage";
 import BakeryDetail from "./pages/BakeryDetail";
+import Signin from "./pages/Signin.jsx";
+import Signup from "./pages/Signup.jsx";
 import "./App.css";
-
-// 이제 삭제해도 되나?
-// 2. 임시 페이지들
-// const Search = () => (
-//   <div className="page-content">
-//     <h2>검색 페이지</h2>
-//   </div>
-// );
 
 const BakeryTour = () => (
   <div className="page-content">
@@ -28,33 +22,28 @@ const BakeryTour = () => (
 const MainLayout = () => {
   return (
     <div className="app-container">
-      <Sidebar /> {/* 👈 유저님의 사이드바 */}
+      <Sidebar />
       <main className="main-content">
-        {/*  <Navbar /> 👈 유저님의 네비바 */}
-        {/* 👇 'Outlet'은 '검색', '빵지순례' 페이지 등이 
+        {/*'Outlet'은 '검색', '빵지순례' 페이지 등이 
               표시될 "빈 공간"이라는 뜻입니다. */}
-        <Outlet /> 
+        <Outlet />
       </main>
     </div>
   );
 };
 
-// 4. 여기가 App 본체입니다.
+// 4. App 본체입니다.
 function App() {
   return (
-    // 'Routes'가 모든걸 감쌉니다.
     <Routes>
-      {/* 경로 1:
-          '/' (홈페이지)로 접속하면... 
-          'MainLayout' (틀) 없이 'HomePage' 컴포넌트만 보여준다.
-      */}
+      {/* 경로 1: 'MainLayout' (틀) 없이 'HomePage' 컴포넌트만 보여준다.
+       */}
       <Route path="/" element={<HomePage />} />
-      
-      {/* 경로 2:
-          '/search', '/bakery-tour' 등 다른 페이지로 접속하면...
-          'MainLayout' (틀)을 먼저 보여주고,
-          그 안의 'Outlet' 자리에 해당 페이지를 보여준다.
-      */}
+      <Route path="/signin" element={<Signin />} />
+      <Route path="/signup" element={<Signup />} />
+
+      {/* 경로 2:'MainLayout' (틀)을 먼저 보여주고, 그 안의 'Outlet' 자리에 해당 페이지를 보여준다.
+       */}
       <Route element={<MainLayout />}>
         <Route path="/search" element={<SearchPage />} />
         <Route path="/bakery/:bakeryId" element={<BakeryDetail />} />
