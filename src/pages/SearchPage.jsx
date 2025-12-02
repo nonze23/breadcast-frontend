@@ -8,8 +8,8 @@ export default function SearchPage() {
 
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [keyword, setKeyword] = useState("");
-  const [sortBy, setSortBy] = useState("popular"); // 기본값: 인기순
+  const [keyword, setKeyword] = useState(""); // 빈 문자열로 시작
+  const [sortBy, setSortBy] = useState("popular");
   const [searchInput, setSearchInput] = useState("");
   const [mapError, setMapError] = useState(null);
   const [isSortDropdownOpen, setIsSortDropdownOpen] = useState(false);
@@ -24,17 +24,22 @@ export default function SearchPage() {
     const fetchBakery = async () => {
       setLoading(true);
       try {
-        // URL 파라미터 구성
-        let url = `http://localhost:8000/api/bakeries?sort=${sortBy}`;
-        if (keyword) {
-          url += `&keyword=${keyword}`;
-        }
+        // ✅ keyword는 항상 보내기 (빈 문자열이라도)
+        const url = `http://43.200.233.19/api/bakeries?keyword=${keyword}&sort=${sortBy}`;
 
         const res = await axios.get(url);
-        const bakeryList = res.data.data.data; // API 응답 구조에 맞게 조정
+
+        console.log("전체 응답:", res.data);
+
+        // ✅ 응답 구조: res.data.data
+        const bakeryList = res.data.data || res.data || [];
+
+        console.log("빵집 목록:", bakeryList);
+
         setList(bakeryList);
       } catch (err) {
         console.error("빵집 목록 불러오기 실패:", err);
+        console.error("에러 상세:", err.response?.data);
         setList([]);
       } finally {
         setLoading(false);
@@ -51,7 +56,7 @@ export default function SearchPage() {
         setMapError("카카오 지도 객체를 불러오지 못했습니다.");
         return;
       }
-      const center = new window.kakao.maps.LatLng(37.5665, 126.978);
+      const center = new window.kakao.maps.LatLng(35.8714, 128.6014); // 대구 좌표
       const options = {
         center,
         level: 5,
@@ -60,7 +65,6 @@ export default function SearchPage() {
       setMapError(null);
     };
 
-    // 개발 환경에서 카카오맵 API 키가 없으면 에러 메시지 표시
     const kakaoMapKey = import.meta.env.VITE_KAKAO_MAP_KEY;
 
     if (!kakaoMapKey) {
@@ -83,7 +87,6 @@ export default function SearchPage() {
       return;
     }
 
-    // 카카오맵 스크립트 동적 로드
     const script = document.createElement("script");
     const kakaoSdkUrl = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${kakaoMapKey}&autoload=false`;
     script.src = kakaoSdkUrl;
@@ -112,12 +115,13 @@ export default function SearchPage() {
     const bounds = new window.kakao.maps.LatLngBounds();
 
     list.forEach((bakery) => {
-      // 빵집에 위도/경도 정보가 있다고 가정
-      if (bakery.latitude && bakery.longitude) {
-        const position = new window.kakao.maps.LatLng(
-          bakery.latitude,
-          bakery.longitude
-        );
+      // ✅ API 응답 필드명에 맞게 수정 (camelCase 또는 snake_case)
+      const lat = bakery.latitude || bakery.lat;
+      const lng = bakery.longitude || bakery.lng;
+      const bakeryId = bakery.id || bakery.bakery_id;
+
+      if (lat && lng) {
+        const position = new window.kakao.maps.LatLng(lat, lng);
 
         const marker = new window.kakao.maps.Marker({
           position: position,
@@ -126,7 +130,7 @@ export default function SearchPage() {
 
         // 마커 클릭 이벤트
         window.kakao.maps.event.addListener(marker, "click", () => {
-          handleBakeryClick(bakery.bakery_id);
+          handleBakeryClick(bakeryId);
         });
 
         markers.current.push(marker);
@@ -179,8 +183,6 @@ export default function SearchPage() {
   // 개별 빵집 선택
   const handleBakeryClick = (bakeryId) => {
     console.log("선택된 빵집 ID:", bakeryId);
-
-    // 상세 페이지로 이동
     navigate(`/bakery/${bakeryId}`);
   };
 
@@ -236,43 +238,52 @@ export default function SearchPage() {
           {loading ? (
             <div className="loading">로딩 중...</div>
           ) : (
-            list.map((bakery) => (
-              <div
-                key={bakery.bakery_id}
-                className="bakery-card"
-                onClick={() => handleBakeryClick(bakery.bakery_id)}
-              >
-                {/* 빵집 사진 */}
-                <div className="bakery-image">
-                  <img src={bakery.photo1} alt={bakery.name} />
-                </div>
+            list.map((bakery) => {
+              // ✅ 필드명 유연하게 처리 (camelCase와 snake_case 모두 지원)
+              const bakeryId = bakery.id || bakery.bakery_id;
+              const favoriteCount =
+                bakery.favoriteCount || bakery.favorite_count || 0;
+              const reviewCount =
+                bakery.reviewCount || bakery.review_count || 0;
 
-                {/* 빵집 정보 */}
-                <div className="bakery-info">
-                  <h3 className="bakery-name">{bakery.name}</h3>
-
-                  {/* 별점과 리뷰 수 */}
-                  <div className="bakery-rating">
-                    <span className="star">⭐</span>
-                    <span className="rating-value">{bakery.rating}</span>
-                    <span className="review-info">
-                      ❤️ {bakery.favorite_count} 리뷰 {bakery.review_count}
-                    </span>
+              return (
+                <div
+                  key={bakeryId}
+                  className="bakery-card"
+                  onClick={() => handleBakeryClick(bakeryId)}
+                >
+                  {/* 빵집 사진 */}
+                  <div className="bakery-image">
+                    <img src={bakery.photo1} alt={bakery.name} />
                   </div>
 
-                  {/* 한줄 소개 */}
-                  {bakery.description && (
-                    <p className="bakery-description">{bakery.description}</p>
-                  )}
+                  {/* 빵집 정보 */}
+                  <div className="bakery-info">
+                    <h3 className="bakery-name">{bakery.name}</h3>
 
-                  {/* 위치 */}
-                  <div className="bakery-location">
-                    <span className="location-icon">📍</span>
-                    <span className="address">{bakery.address}</span>
+                    {/* 별점과 리뷰 수 */}
+                    <div className="bakery-rating">
+                      <span className="star">⭐</span>
+                      <span className="rating-value">{bakery.rating}</span>
+                      <span className="review-info">
+                        ❤️ {favoriteCount} 리뷰 {reviewCount}
+                      </span>
+                    </div>
+
+                    {/* 한줄 소개 */}
+                    {bakery.description && (
+                      <p className="bakery-description">{bakery.description}</p>
+                    )}
+
+                    {/* 위치 */}
+                    <div className="bakery-location">
+                      <span className="location-icon">📍</span>
+                      <span className="address">{bakery.address}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))
+              );
+            })
           )}
 
           {!loading && list.length === 0 && (
