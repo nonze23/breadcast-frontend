@@ -1,0 +1,330 @@
+.bakery-detail-page {
+  display: flex;
+  height: 100vh;
+  background-color: #f5f5f5;
+  overflow: hidden;
+}
+
+/* 왼쪽 패널 */
+.detail-left-panel {
+  width: 400px;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid #e0e0e0;
+}
+
+/* 사진 갤러리 - 2개 사진 나란히 표시 */
+.photo-gallery {
+  position: relative;
+  width: 100%;
+  height: 280px;
+  background-color: #000;
+  flex-shrink: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* 2개 나란히 */
+  gap: 2px;
+}
+
+/* 사진 스타일 */
+.bakery-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* 닫기 버튼 */
+.close-btn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background-color: rgba(255, 255, 255, 0.9);
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  z-index: 10; /* 사진 위에 표시되도록 */
+}
+
+.close-btn:hover {
+  background-color: white;
+  transform: scale(1.1);
+}
+
+/* 빵집 헤더 */
+.bakery-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.bakery-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #222;
+  margin: 0;
+}
+
+.favorite-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 24px;
+  transition: transform 0.2s;
+}
+
+.favorite-btn:hover {
+  transform: scale(1.2);
+}
+
+.favorite-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* 탭 메뉴 */
+.tab-menu {
+  display: flex;
+  border-bottom: 1px solid #e0e0e0;
+  background-color: white;
+  flex-shrink: 0;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 16px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 500;
+  color: #999;
+  position: relative;
+  transition: all 0.2s;
+}
+
+.tab-btn:hover {
+  color: #666;
+}
+
+.tab-btn.active {
+  color: #222;
+}
+
+.tab-btn.active::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background-color: #8b6f47;
+}
+
+/* 탭 컨텐츠 */
+.tab-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.tab-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.tab-content::-webkit-scrollbar-thumb {
+  background-color: #ddd;
+  border-radius: 4px;
+}
+
+/* 홈 탭 */
+.home-tab {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.info-item {
+  display: flex;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.info-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.info-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.info-label {
+  font-size: 14px;
+  color: #333;
+  font-weight: 500;
+}
+
+.info-sub {
+  font-size: 13px;
+  color: #999;
+}
+
+.info-link {
+  font-size: 14px;
+  color: #4a90e2;
+  text-decoration: none;
+}
+
+.info-link:hover {
+  text-decoration: underline;
+}
+
+.copy-text {
+  font-size: 12px;
+  color: #999;
+  margin-left: 8px;
+  cursor: pointer;
+}
+
+.copy-text:hover {
+  color: #666;
+}
+
+/* 통계 섹션 */
+.stats-section {
+  display: flex;
+  justify-content: space-around;
+  padding: 20px;
+  background-color: #f8f8f8;
+  border-radius: 12px;
+  margin-top: 12px;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.stat-icon {
+  font-size: 24px;
+}
+
+.stat-value {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+/* 빈 메시지 */
+.empty-message {
+  text-align: center;
+  padding: 60px 20px;
+  color: #999;
+  font-size: 14px;
+}
+
+/* 오른쪽 패널 - 지도 */
+.detail-right-panel {
+  flex: 1;
+  background-color: #f5f5f5;
+  position: relative;
+}
+
+.detail-map-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.kakao-map {
+  width: 100%;
+  height: 100%;
+}
+
+.map-error {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  font-size: 16px;
+  font-weight: 500;
+  padding: 20px;
+  text-align: center;
+}
+
+/* 로딩 */
+.loading-container {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: #999;
+}
+
+.error-message {
+  text-align: center;
+}
+
+.error-message p {
+  font-size: 16px;
+  color: #e74c3c;
+  margin-bottom: 20px;
+}
+
+.back-button {
+  padding: 10px 24px;
+  background-color: #8b6f47;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.back-button:hover {
+  background-color: #6f5738;
+  transform: translateY(-2px);
+}
+
+/* 반응형 */
+@media (max-width: 768px) {
+  .bakery-detail-page {
+    flex-direction: column;
+  }
+
+  .detail-left-panel {
+    width: 100%;
+    height: 70%;
+  }
+
+  .detail-right-panel {
+    width: 100%;
+    height: 30%;
+  }
+
+  .photo-gallery {
+    height: 200px;
+  }
+}

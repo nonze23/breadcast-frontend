@@ -1,0 +1,91 @@
+.bakery-review-write {
+  width: 100%;
+  border-radius: 24px;
+  background-color: #fff8ef;
+  padding: 24px;
+  box-shadow: 0 10px 30px rgba(112, 74, 36, 0.16);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  box-sizing: border-box;
+}
+
+.bakery-review-write__bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.bakery-review-write__bar button {
+  border: none;
+  border-radius: 999px;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.bakery-review-write__bar button.secondary {
+  background-color: #f5e1cf;
+  color: #7a4c2a;
+}
+
+.bakery-review-write__bar button[type="submit"],
+.bakery-review-write__bar button:not(.secondary) {
+  background-color: #d09052;
+  color: #fff;
+}
+
+.bakery-review-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: #4a2d17;
+}
+
+.bakery-review-field input,
+.bakery-review-field select,
+.bakery-review-field textarea {
+  padding: 12px;
+  border-radius: 16px;
+  border: 1px solid #e3cbb1;
+  font-size: 15px;
+  font-family: inherit;
+  background-color: #fff;
+}
+
+.bakery-review-error {
+  color: #b3261e;
+  font-weight: 600;
+}
+
+.bakery-review-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.bakery-review-actions button {
+  min-width: 90px;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.bakery-review-actions button:first-of-type {
+  background-color: #f5e1cf;
+  color: #7a4c2a;
+}
+
+.bakery-review-actions button:last-of-type {
+  background-color: #d09052;
+  color: #fff;
+}
+
+.bakery-review-actions button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+

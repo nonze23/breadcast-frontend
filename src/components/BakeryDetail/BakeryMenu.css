@@ -1,0 +1,83 @@
+.bakery-menu-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.bakery-menu-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 90px;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 18px;
+  background-color: #fff8ef;
+}
+
+.bakery-menu-info {
+  min-width: 0;
+}
+
+.bakery-menu-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.bakery-menu-name {
+  font-weight: 600;
+  color: #3a2412;
+}
+
+.bakery-menu-rating {
+  color: #f0a23a;
+  font-weight: 600;
+}
+
+.bakery-menu-desc {
+  margin: 4px 0;
+  color: #7b5434;
+  font-size: 14px;
+}
+
+.bakery-menu-price {
+  font-weight: 600;
+  color: #3a2412;
+  margin-bottom: 6px;
+}
+
+.bakery-menu-review-link {
+  border: none;
+  background: none;
+  color: #b36b2d;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+}
+
+.bakery-menu-image {
+  width: 90px;
+  height: 90px;
+  border-radius: 16px;
+  overflow: hidden;
+  background-color: #f9dcc4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bakery-menu-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.bakery-menu-empty {
+  text-align: center;
+  padding: 40px 0;
+  color: #a37243;
+  background-color: #fff8ef;
+  border-radius: 18px;
+}
+
+

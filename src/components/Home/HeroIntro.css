@@ -1,0 +1,239 @@
+.hero-header {
+  position: absolute; 
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 20px 5%; 
+  display: flex;
+  justify-content: space-between; 
+  align-items: center;
+  z-index: 10;
+  box-sizing: border-box;
+}
+
+/* 로고 스타일 */
+.hero-logo a {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: white; 
+  font-weight: bold;
+  font-size: 1.5rem;
+  font-family: 'Titan One', sans-serif; 
+}
+.hero-logo img {
+  height: 70px; 
+  margin-right: -9px;
+}
+.hero-logo a span {
+  position: relative;
+  top: -7px; 
+  -webkit-text-stroke: 0.1px #754C24;
+}
+
+.hero-nav {
+  display: flex;
+  gap: 40px;
+}
+.hero-nav a {
+  text-decoration: none; 
+  color: white; 
+  font-size: 1.1rem;
+  font-weight: 500;
+  position: relative;
+  padding-bottom: 5px;
+}
+.hero-nav a:hover {
+  color: #f5b921; 
+}
+.hero-nav a:hover::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background-color: #f5b921; 
+  border-radius: 2px;
+}
+
+/*로그인 버튼*/
+.hero-auth-buttons {
+  display: flex;
+  gap: 15px;
+}
+.hero-auth-buttons button {
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 8px 20px;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  border: 1px solid white;
+}
+.btn-login-hero {
+  background-color: transparent; 
+  color: white; 
+}
+.btn-login-hero:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+/*회원가입 버튼*/
+.btn-signup-hero {
+  background-color: white; 
+  color: #754C24; 
+  border: 1px solid white;
+}
+.btn-signup-hero:hover {
+  background-color: #f0f0f0;
+}
+
+.hero-section {
+    background-image: url('../../assets/HeroIntro.png'); 
+    background-size: cover;
+    background-position: center;
+    height: 600px; 
+    position: relative;
+    background-blend-mode: multiply;
+    background-color: rgba(100, 70, 40, 0.4); 
+    width: 100%; 
+    box-sizing: border-box; 
+    margin: 0; 
+}
+
+.hero-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+
+    position: absolute; 
+    top: 50%;
+    left: 10%;       
+    transform: translateY(-50%);
+    color: white;
+    text-align: left;
+
+    max-width: 600px;
+}
+
+.hero-content h1 {
+    font-family: 'Titan One', sans-serif;
+    font-size: 6.5rem; 
+    font-weight: 700;
+    -webkit-text-stroke: 1px #754C24; 
+    color: white;
+    margin-bottom: 0.1rem;
+}
+
+.slogan-main {
+    font-size: 2rem; 
+    font-weight: 600;
+    margin-top: 0; 
+    margin-bottom: 1rem; 
+    white-space: nowrap; 
+}
+
+.slogan-sub {
+    margin-top: 0.5rem; 
+}
+
+.hero-buttons {
+    margin-top: 2.5rem; 
+    display: flex; /* 버튼들을 가로로 나열하기 위해 flexbox 사용 */
+    gap: 15px; /* 버튼들 사이의 간격 */
+}
+
+.hero-buttons button {
+    font-size: 1.1rem; /* 폰트 크기 */
+    padding: 12px 30px; /* 상하 12px, 좌우 30px 패딩 */
+    border: none; /* 기본 테두리 제거 */
+    border-radius: 50px; 
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease; /* 호버 효과를 위한 전환 */
+    min-width: 120px; /* 버튼 최소 너비 설정 (텍스트 길이에 따라 유동적으로) */
+    text-align: center;
+}
+
+/* 로그인 버튼 스타일 */
+.btn-login {
+    background-color: #A16127; 
+    color: white; 
+}
+
+/* 회원가입 버튼 스타일 */
+.btn-signup {
+    background-color: white; 
+    color: #A16127; 
+    border: 2px solid #A16127; 
+}
+
+/* 버튼 호버 효과 */
+.btn-login:hover {
+    background-color: #5A3A1A; /* 약간 더 어두운 갈색 */
+}
+
+.btn-signup:hover {
+    background-color: #F8F8F8; /* 살짝 밝은 흰색 */
+    color: #5A3A1A; /* 글자색도 약간 더 어둡게 */
+}
+
+
+
+.intro-section {
+  /* 이미지의 옅은 베이지/살구색 배경이 위에서는 조금 더 진하고 아래로 갈수록 부드럽게 이어지도록 */
+  background: linear-gradient(
+    180deg,
+    #ffe6c2 0%,  /* Hero 아래쪽과 자연스럽게 이어지는 살구색 */
+    #fff9f2 60%  /* 아래로 갈수록 기존 베이지 배경으로 전환 */
+  );
+  width: 100%;
+  padding-top: 350px; 
+  padding-bottom: 100px; 
+  padding-left: 20px;
+  padding-right: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px; 
+
+  position: relative;
+  margin-top: 0; 
+  z-index: 0; 
+
+  width: 100%;
+  box-sizing: border-box; 
+  margin: 0; 
+  
+}
+
+.intro-visuals {
+  position: absolute; 
+  top: -100px; 
+  left: 50%; 
+  transform: translateX(-50%); 
+  z-index: 10; 
+}
+
+.intro-icon {
+  max-width: 450px; 
+  height: auto;
+}
+
+.intro-text {
+  text-align: center; 
+  max-width: 800px; 
+}
+
+.intro-text h2 {
+  font-family: 'Titan One', sans-serif;
+  font-size: 3.5rem; 
+  color: #754C24; 
+  margin-bottom: 20px; 
+}
+
+.intro-text p {
+  font-size: 1rem;
+  color: #754C24; 
+  line-height: 1.7; 
+}
+
