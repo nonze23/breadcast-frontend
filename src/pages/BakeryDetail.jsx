@@ -1,29 +1,3 @@
-/*
-photo1	빵집 사진
-photo2	빵집 사진
-name	빵집 이름 
--> 보여진 다음에 (위의 변수명으로 데이터를 가져와야됨)
-
-홈 메뉴가 보여지고 
-address	빵집 주소
-phone	빵집 연락처
-URL	빵집 사이트
-이것들이 보여져야 됨  사진처럼
-
-id	빵집 ID
-name	빵집 이름
-address	빵집 주소
-phone	빵집 연락처
-latitude	빵집의 위도 (y좌표)
-longitude	빵집의 경도 (x좌표)
-URL	빵집 사이트
-photo1	빵집 사진
-photo2	빵집 사진
-name	빵집 이름 
-rating	빵집 평균 별점
-favorite_count	빵집 좋아요 수
-review_count	빵집 리뷰 수
- */
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -40,8 +14,9 @@ export default function BakeryDetail() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState("home");
-  const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
   const [mapError, setMapError] = useState(null);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [isFavoriteLoading, setIsFavoriteLoading] = useState(false);
 
   const mapRef = useRef(null);
   const mapInstance = useRef(null);
@@ -53,9 +28,17 @@ export default function BakeryDetail() {
       setError(null);
       try {
         const res = await axios.get(
-          `http://localhost:8000/api/bakeries/${bakeryId}`
+          `http://43.200.233.19/api/bakeries/${bakeryId}`
         );
-        setBakery(res.data.data);
+
+        console.log("빵집 상세 응답:", res.data);
+
+        const bakeryData = res.data.data || res.data;
+        setBakery(bakeryData);
+
+        if (bakeryData.isFavorited !== undefined) {
+          setIsFavorite(bakeryData.isFavorited);
+        }
       } catch (err) {
         console.error("빵집 상세 정보 불러오기 실패:", err);
         setError("빵집 정보를 불러오는데 실패했습니다.");
@@ -63,9 +46,39 @@ export default function BakeryDetail() {
         setLoading(false);
       }
     };
-
     fetchBakeryDetail();
   }, [bakeryId]);
+
+  // 관심 가게 추가/삭제 처리
+  const handleToggleFavorite = async () => {
+    if (isFavoriteLoading) return;
+
+    setIsFavoriteLoading(true);
+
+    try {
+      if (isFavorite) {
+        await axios.delete(
+          `http://43.200.233.19/api/members/me/favorites/bakeries/${bakeryId}`
+        );
+        setIsFavorite(false);
+      } else {
+        await axios.post(
+          `http://43.200.233.19/api/members/me/favorites/bakeries/${bakeryId}`
+        );
+        setIsFavorite(true);
+      }
+    } catch (err) {
+      console.error("관심 가게 처리 실패:", err);
+
+      if (err.response?.status === 401) {
+        alert("로그인이 필요한 서비스입니다.");
+      } else {
+        alert("관심 가게 처리에 실패했습니다. 다시 시도해주세요.");
+      }
+    } finally {
+      setIsFavoriteLoading(false);
+    }
+  };
 
   // 카카오맵 초기화
   useEffect(() => {
@@ -89,7 +102,6 @@ export default function BakeryDetail() {
 
       mapInstance.current = new window.kakao.maps.Map(mapRef.current, options);
 
-      // 마커 추가
       const marker = new window.kakao.maps.Marker({
         position: position,
         map: mapInstance.current,
@@ -132,16 +144,21 @@ export default function BakeryDetail() {
     document.head.appendChild(script);
   }, [bakery]);
 
-  // 뒤로 가기
   const handleGoBack = () => {
     navigate(-1);
   };
 
+  // 메뉴와 리뷰 불러오기
   useEffect(() => {
     const fetchMenus = async () => {
       try {
-        const res = await axios.get(`/api/bakeries/${bakeryId}/menus`);
-        const data = res.data?.data ?? res.data;
+        const res = await axios.get(
+          `http://43.200.233.19/api/bakeries/${bakeryId}/menus`
+        );
+
+        console.log("메뉴 응답:", res.data);
+
+        const data = res.data.data || res.data;
         setMenus(Array.isArray(data) ? data : []);
       } catch (err) {
         console.error("메뉴 불러오기 실패:", err);
@@ -151,8 +168,13 @@ export default function BakeryDetail() {
 
     const fetchReviews = async () => {
       try {
-        const res = await axios.get(`/api/bakeries/${bakeryId}/bakery-reviews`);
-        const data = res.data?.data ?? res.data;
+        const res = await axios.get(
+          `http://43.200.233.19/api/bakeries/${bakeryId}/bakery-reviews`
+        );
+
+        console.log("리뷰 응답:", res.data);
+
+        const data = res.data.data || res.data;
         setReviews(Array.isArray(data) ? data : []);
       } catch (err) {
         console.error("리뷰 불러오기 실패:", err);
@@ -163,15 +185,6 @@ export default function BakeryDetail() {
     fetchMenus();
     fetchReviews();
   }, [bakeryId]);
-
-  // 사진 슬라이드
-  const handlePrevPhoto = () => {
-    setCurrentPhotoIndex((prev) => (prev === 0 ? 1 : 0));
-  };
-
-  const handleNextPhoto = () => {
-    setCurrentPhotoIndex((prev) => (prev === 1 ? 0 : 1));
-  };
 
   if (loading) {
     return <div className="loading-container">로딩 중...</div>;
@@ -200,21 +213,17 @@ export default function BakeryDetail() {
 
   return (
     <div className="bakery-detail-page">
-      {/* 왼쪽: 상세 정보 */}
       <div className="detail-left-panel">
         {/* 사진 갤러리 */}
         <div className="photo-gallery">
-          <button className="photo-nav-btn prev" onClick={handlePrevPhoto}>
-            ‹
-          </button>
-          <img
-            src={photos[currentPhotoIndex]}
-            alt={bakery.name}
-            className="main-photo"
-          />
-          <button className="photo-nav-btn next" onClick={handleNextPhoto}>
-            ›
-          </button>
+          {photos.map((photo, index) => (
+            <img
+              key={index}
+              src={photo}
+              alt={`${bakery.name} ${index + 1}`}
+              className="bakery-photo"
+            />
+          ))}
           <button className="close-btn" onClick={handleGoBack}>
             ✕
           </button>
@@ -223,8 +232,12 @@ export default function BakeryDetail() {
         {/* 빵집 기본 정보 */}
         <div className="bakery-header">
           <h1 className="bakery-title">{bakery.name}</h1>
-          <button className="favorite-btn">
-            <span className="heart">🤍</span>
+          <button
+            className="favorite-btn"
+            onClick={handleToggleFavorite}
+            disabled={isFavoriteLoading}
+          >
+            <span className="heart">{isFavorite ? "🤎" : "🤍"}</span>
           </button>
         </div>
 
@@ -265,7 +278,6 @@ export default function BakeryDetail() {
                 <span className="info-icon">📍</span>
                 <div className="info-text">
                   <div className="info-label">{bakery.address}</div>
-                  <div className="info-sub">사월역 2번 출구에서 452m</div>
                 </div>
               </div>
 
@@ -273,8 +285,7 @@ export default function BakeryDetail() {
               <div className="info-item">
                 <span className="info-icon">🕐</span>
                 <div className="info-text">
-                  <div className="info-label">영업 종료</div>
-                  <div className="info-sub">10:00에 영업 시작</div>
+                  <div className="info-label">영업시간 정보 준비중</div>
                 </div>
               </div>
 
@@ -296,7 +307,7 @@ export default function BakeryDetail() {
                   <div className="info-text">
                     <a
                       href={bakery.URL}
-                      target="_blank"
+                      tsarget="_blank"
                       rel="noopener noreferrer"
                       className="info-link"
                     >
@@ -305,22 +316,6 @@ export default function BakeryDetail() {
                   </div>
                 </div>
               )}
-
-              {/* 통계 */}
-              <div className="stats-section">
-                <div className="stat-item">
-                  <span className="stat-icon">⭐</span>
-                  <span className="stat-value">{bakery.rating}</span>
-                </div>
-                <div className="stat-item">
-                  <span className="stat-icon">❤️</span>
-                  <span className="stat-value">{bakery.favorite_count}</span>
-                </div>
-                <div className="stat-item">
-                  <span className="stat-icon">💬</span>
-                  <span className="stat-value">{bakery.review_count}</span>
-                </div>
-              </div>
             </div>
           )}
 
