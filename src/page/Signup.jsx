@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import signupImg from "../assets/signup.png";
 import axios from "axios";
-//  import { useSatate } from "react"; -> 오타!! 주의
 import "./Signup.css";
 
 export default function Signup() {
@@ -12,51 +11,83 @@ export default function Signup() {
     navigate("/");
   };
 
-  //  상태 관리
+  // 상태 관리
   const [id, setId] = useState("");
-  const handleId = (e) => {
-    setId(e.target.value);
-  };
-
   const [nickname, setNickname] = useState("");
-  const handleNickname = (e) => {
-    setNickname(e.target.value);
-  };
-
   const [pw1, setPw1] = useState("");
-  const handlePw1 = (e) => {
-    setPw1(e.target.value);
-  };
-
   const [pw2, setPw2] = useState("");
-  const handlePw2 = (e) => {
-    setPw2(e.target.value);
-  };
 
-  //규칙
+  // 규칙
   const id_valid = /^[a-zA-Z0-9]{5,20}$/;
   const pw1_valid =
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+])[A-Za-z\d!@#$%^&*()_+]{8,20}$/;
+  const nickname_valid = nickname.trim().length >= 2;
 
   // 회원가입 처리 함수
   const handleSignup = async () => {
-    //유효성 검사 안함 : 대신 버튼활성호로 처리
+    // 유효성 검사
+    if (!id_valid.test(id)) {
+      alert("아이디는 영문+숫자 5~20자여야 합니다.");
+      return;
+    }
+
+    if (!nickname_valid) {
+      alert("닉네임은 2글자 이상 입력해주세요.");
+      return;
+    }
+
+    if (!pw1_valid.test(pw1)) {
+      alert("비밀번호는 영문 소+대 특수문자 포함 8~20자여야 합니다.");
+      return;
+    }
+
+    if (pw1 !== pw2) {
+      alert("비밀번호가 일치하지 않습니다.");
+      return;
+    }
+
+    const requestData = {
+      loginId: id,
+      password: pw1,
+      nickname: nickname,
+    };
+
+    console.log("전송 데이터:", requestData);
 
     try {
       const response = await axios.post(
-        "http://localhost:8080/auth/signup",
+        "http://43.200.233.19/auth/signup",
+        requestData,
         {
-          LoginId: id,
-          password: pw1,
-          nickname: nickname,
-        },
-        { withCredentials: true }
+          withCredentials: true,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
       );
-      console.log("로그인 성공:", response.data);
-      navigate("/signin"); //로그인 이동
+
+      console.log("회원가입 성공:", response.data);
+      alert("회원가입 성공! 로그인 페이지로 이동합니다.");
+      navigate("/signin");
     } catch (error) {
-      console.error("로그인 실패:", error);
-      alert("로그인에 실패했습니다.");
+      console.error("회원가입 실패:", error);
+
+      if (error.response) {
+        const errorMessage =
+          error.response.data.message || error.response.data.error;
+
+        if (error.response.status === 409) {
+          alert("이미 존재하는 아이디입니다.");
+        } else if (errorMessage) {
+          alert(`회원가입 실패: ${errorMessage}`);
+        } else {
+          alert("회원가입에 실패했습니다. 입력 정보를 확인해주세요.");
+        }
+      } else if (error.request) {
+        alert("서버와 연결할 수 없습니다. 네트워크를 확인해주세요.");
+      } else {
+        alert("회원가입 중 오류가 발생했습니다.");
+      }
     }
   };
 
@@ -87,7 +118,7 @@ export default function Signup() {
           <div className="input-with-button">
             <input
               value={id}
-              onChange={handleId}
+              onChange={(e) => setId(e.target.value)}
               type="text"
               placeholder="아이디 (영문+숫자 5~20자)"
               className="signup-input"
@@ -98,26 +129,33 @@ export default function Signup() {
               아이디는 영문+숫자 5~20자여야 합니다.
             </span>
           )}
+
           <div className="input-with-button">
             <input
               type="text"
               value={nickname}
-              onChange={handleNickname}
-              placeholder="닉네임"
+              onChange={(e) => setNickname(e.target.value)}
+              placeholder="닉네임 (2글자 이상)"
               className="signup-input"
             />
           </div>
+          {nickname !== "" && !nickname_valid && (
+            <span className="error-message">
+              닉네임은 2글자 이상 입력해주세요.
+            </span>
+          )}
+
           <div className="input-group">
             <input
               value={pw1}
-              onChange={handlePw1}
+              onChange={(e) => setPw1(e.target.value)}
               type="password"
-              placeholder="비밀번호 : 영문 소+대 특수문자 부호 8~20자로 입력해주세요"
+              placeholder="비밀번호 : 영문 소+대 특수문자 포함 8~20자"
               className="signup-input-full"
             />
             {pw1 !== "" && !pw1_valid.test(pw1) && (
               <span className="error-message">
-                비밀번호는 영문 소+대 특수문자 부호 8~20자여야 합니다.
+                비밀번호는 영문 소+대 특수문자 포함 8~20자여야 합니다.
               </span>
             )}
           </div>
@@ -125,11 +163,11 @@ export default function Signup() {
           <div className="input-group">
             <input
               value={pw2}
-              onChange={handlePw2}
+              onChange={(e) => setPw2(e.target.value)}
               type="password"
               placeholder="비밀번호 재확인"
               className="signup-input-full"
-            />{" "}
+            />
             {pw1 !== "" && pw2 !== "" && pw1 !== pw2 && (
               <span className="error-message">
                 비밀번호가 일치하지 않습니다.
@@ -140,7 +178,13 @@ export default function Signup() {
           <button
             className="signup-button"
             onClick={handleSignup}
-            disabled={!id_valid.test(id) || !pw1_valid.test(pw1) || pw1 !== pw2}
+            disabled={
+              !id_valid.test(id) ||
+              !nickname_valid ||
+              !pw1_valid.test(pw1) ||
+              pw1 !== pw2 ||
+              nickname.trim() === ""
+            }
           >
             회원가입
           </button>
@@ -149,14 +193,3 @@ export default function Signup() {
     </div>
   );
 }
-
-/* : api 정보
-기능	HTTP Method	API 경로
-회원가입하기	POST	/auth/signup
-
-
-loninId	String	private	유저 로그인 ID
-password	String	private	유저 패스워드
-nickname	String	private	유저 닉네임
-*/
-// import { useSatate } from "react"; -> 오타!! 주의
