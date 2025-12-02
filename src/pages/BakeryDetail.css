@@ -14,51 +14,26 @@
   border-right: 1px solid #e0e0e0;
 }
 
-/* 사진 갤러리 */
+/* 사진 갤러리 - 2개 사진 나란히 표시 */
 .photo-gallery {
   position: relative;
   width: 100%;
   height: 280px;
   background-color: #000;
   flex-shrink: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* 2개 나란히 */
+  gap: 2px;
 }
 
-.main-photo {
+/* 사진 스타일 */
+.bakery-photo {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.photo-nav-btn {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background-color: rgba(255, 255, 255, 0.9);
-  border: none;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  font-size: 24px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s;
-}
-
-.photo-nav-btn:hover {
-  background-color: white;
-  transform: translateY(-50%) scale(1.1);
-}
-
-.photo-nav-btn.prev {
-  left: 16px;
-}
-
-.photo-nav-btn.next {
-  right: 16px;
-}
-
+/* 닫기 버튼 */
 .close-btn {
   position: absolute;
   top: 16px;
@@ -74,6 +49,7 @@
   align-items: center;
   justify-content: center;
   transition: all 0.2s;
+  z-index: 10; /* 사진 위에 표시되도록 */
 }
 
 .close-btn:hover {
@@ -107,6 +83,11 @@
 
 .favorite-btn:hover {
   transform: scale(1.2);
+}
+
+.favorite-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 /* 탭 메뉴 */
