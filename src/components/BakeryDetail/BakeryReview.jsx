@@ -45,7 +45,7 @@ function BakeryReview({ reviews }) {
     try {
       setSubmitting(true);
       await axios.patch(
-        `/api/bakery-reviews/${reviewId}`,
+        `http://43.200.233.19/api/bakery-reviews/${reviewId}`,
         {
           text: trimmed,
           rating: targetReview.rating,
@@ -75,7 +75,7 @@ function BakeryReview({ reviews }) {
   const handleDelete = async (reviewId) => {
     if (!window.confirm("리뷰를 삭제하시겠습니까?")) return;
     try {
-      await axios.delete(`/api/bakery-reviews/${reviewId}`, {
+      await axios.delete(`http://43.200.233.19/api/bakery-reviews/${reviewId}`, {
         withCredentials: true,
       });
       setLocalReviews((prev) =>

@@ -1,0 +1,147 @@
+.favorite-stores-container {
+  padding: 20px;
+  box-sizing: border-box;
+  height: calc(100vh - 80px); /* Navbar 높이 감안한 예시값 */
+}
+
+.favorite-stores-inner {
+  display: flex;
+  gap: 20px;
+  height: 100%;
+}
+
+.favorite-stores-left {
+  flex: 0 0 50%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow-y: auto;
+}
+
+.favorite-stores-right {
+  flex: 0 0 50%;
+}
+
+.favorite-stores-list-card {
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.favorite-stores-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.favorite-stores-item {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 12px;
+  background-color: #fff7ec;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.favorite-stores-item:hover {
+  background-color: #fff3e5;
+}
+
+.favorite-stores-images {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.favorite-stores-image {
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #e8d5c4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.favorite-stores-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.favorite-stores-placeholder {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #8a5b2e;
+}
+
+.favorite-stores-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  justify-content: center;
+}
+
+.favorite-stores-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #4F4D4D;
+  margin-bottom: 4px;
+}
+
+.favorite-stores-phone {
+  font-size: 0.9rem;
+  color: #6d3f1f;
+}
+
+.favorite-stores-address {
+  font-size: 0.85rem;
+  color: #8a7a6a;
+  line-height: 1.4;
+}
+
+.favorite-stores-status {
+  font-size: 0.9rem;
+  color: #8a7a6a;
+  text-align: center;
+  padding: 20px;
+}
+
+.favorite-stores-error {
+  font-size: 0.85rem;
+  color: #b63a1d;
+  text-align: center;
+  padding: 20px;
+}
+
+.favorite-stores-map {
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+}
+
+.favorite-stores-map-error {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(255, 255, 255, 0.9);
+  color: #a16127;
+  padding: 16px 24px;
+  border-radius: 12px;
+  text-align: center;
+  font-weight: 600;
+  line-height: 1.4;
+}

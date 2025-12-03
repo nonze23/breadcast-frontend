@@ -25,7 +25,7 @@ function BakeryReviewWrite({ bakeryId, onCancel, onSubmitSuccess }) {
 
     try {
       setSubmitting(true);
-      await axios.post(`/api/bakeries/${bakeryId}/bakery-reviews`, payload, {
+      await axios.post(`http://43.200.233.19/api/bakeries/${bakeryId}/bakery-reviews`, payload, {
         headers: { "Content-Type": "application/json" },
         withCredentials: true,
       });

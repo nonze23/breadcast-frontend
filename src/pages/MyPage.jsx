@@ -25,7 +25,7 @@ function MyPage() {
       try {
         setProfileLoading(true);
         setProfileError(null);
-        const response = await fetch('/api/members/me', {
+        const response = await fetch('http://43.200.233.19/api/members/me', {
           method: 'GET',
           credentials: 'include',
           signal: controller.signal,
@@ -61,7 +61,7 @@ function MyPage() {
       try {
         setMyCoursesLoading(true);
         setMyCoursesError(null);
-        const response = await fetch('/api/members/me/courses', {
+        const response = await fetch('http://43.200.233.19/api/members/me/courses', {
           method: 'GET',
           credentials: 'include',
           signal: controller.signal,
@@ -159,7 +159,7 @@ function MyPage() {
     try {
       setIsSavingNickname(true);
       setNicknameError(null);
-      const response = await fetch('/api/members/me', {
+      const response = await fetch('http://43.200.233.19/api/members/me', {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',

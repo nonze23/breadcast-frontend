@@ -9,6 +9,7 @@ import SearchPage from "./pages/SearchPage";
 import BakeryDetail from "./pages/BakeryDetail";
 import Signin from "./pages/Signin.jsx";
 import Signup from "./pages/Signup.jsx";
+import FavoriteStoresPage from "./pages/FavoriteStoresPage";
 import "./App.css";
 
 const BakeryTour = () => (
@@ -49,6 +50,7 @@ function App() {
         <Route path="/bakery/:bakeryId" element={<BakeryDetail />} />
         <Route path="/bakery-tour" element={<BakeryTour />} />
         <Route path="/mypage" element={<MyPage />} />
+        <Route path="/mypage/favorites/store" element={<FavoriteStoresPage />} />
       </Route>
     </Routes>
   );

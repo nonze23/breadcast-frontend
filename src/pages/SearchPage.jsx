@@ -25,7 +25,7 @@ export default function SearchPage() {
       setLoading(true);
       try {
         // URL 파라미터 구성
-        let url = `http://localhost:8000/api/bakeries?sort=${sortBy}`;
+        let url = `http://43.200.233.19/api/bakeries?sort=${sortBy}`;
         if (keyword) {
           url += `&keyword=${keyword}`;
         }
