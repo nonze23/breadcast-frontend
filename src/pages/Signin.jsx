@@ -42,7 +42,7 @@ export default function Signin() {
 
     try {
       const response = await axios.post(
-        "http://43.200.233.19/auth/login",
+        "/auth/login", // 상대 경로 (프록시를 탐)
         requestData,
         {
           withCredentials: true,

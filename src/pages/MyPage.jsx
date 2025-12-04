@@ -3,6 +3,70 @@ import { FaPen } from 'react-icons/fa';
 import './MyPage.css';
 
 const DEFAULT_NICKNAME = 'hyexnzzi';
+const SERVER_URL = '';
+
+const MemberAPI = {
+  async getMemberProfile(signal) {
+    const response = await fetch(`${SERVER_URL}/api/members/me`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      signal,
+    });
+
+    if (!response.ok) {
+      throw new Error('프로필 정보를 불러오지 못했습니다.');
+    }
+
+    return response.json();
+  },
+
+  async updateMemberProfile(updateRequestDto) {
+    const response = await fetch(`${SERVER_URL}/api/members/me`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(updateRequestDto),
+    });
+
+    if (!response.ok) {
+      let message = '닉네임을 저장하지 못했습니다.';
+      try {
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+          const errorDto = await response.json();
+          if (errorDto?.message) {
+            message = errorDto.message;
+          }
+        } else {
+          const errorText = await response.text();
+          console.error('서버가 JSON이 아닌 오류를 반환했습니다:', errorText);
+          message = `서버 오류 발생 (${response.status})`;
+        }
+      } catch (error) {
+        console.error('오류 응답 처리 중 예외가 발생했습니다:', error);
+      }
+      throw new Error(message);
+    }
+
+    return response.json();
+  },
+
+  async getMyCourses(signal) {
+    const response = await fetch(`${SERVER_URL}/api/members/me/courses`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      signal,
+    });
+
+    if (!response.ok) {
+      throw new Error('나의 빵지순례 목록을 불러오지 못했습니다.');
+    }
+
+    return response.json();
+  },
+};
 
 function MyPage() {
   const mapRef = useRef(null);
@@ -25,18 +89,9 @@ function MyPage() {
       try {
         setProfileLoading(true);
         setProfileError(null);
-        const response = await fetch('http://43.200.233.19/api/members/me', {
-          method: 'GET',
-          credentials: 'include',
-          signal: controller.signal,
-        });
 
-        if (!response.ok) {
-          throw new Error('프로필 정보를 불러오지 못했습니다.');
-        }
-
-        const data = await response.json();
-        const nextNickname = data?.nickname ?? DEFAULT_NICKNAME;
+        const profileResponseDto = await MemberAPI.getMemberProfile(controller.signal);
+        const nextNickname = profileResponseDto?.nickname ?? DEFAULT_NICKNAME;
         setNickname(nextNickname);
         setTempNickname(nextNickname);
       } catch (error) {
@@ -49,9 +104,7 @@ function MyPage() {
 
     fetchProfile();
 
-    return () => {
-      controller.abort();
-    };
+    return () => controller.abort();
   }, []);
 
   useEffect(() => {
@@ -61,18 +114,9 @@ function MyPage() {
       try {
         setMyCoursesLoading(true);
         setMyCoursesError(null);
-        const response = await fetch('http://43.200.233.19/api/members/me/courses', {
-          method: 'GET',
-          credentials: 'include',
-          signal: controller.signal,
-        });
 
-        if (!response.ok) {
-          throw new Error('나의 빵지순례 목록을 불러오지 못했습니다.');
-        }
-
-        const data = await response.json();
-        setMyCourses(Array.isArray(data) ? data : []);
+        const myCoursesDtoList = await MemberAPI.getMyCourses(controller.signal);
+        setMyCourses(Array.isArray(myCoursesDtoList) ? myCoursesDtoList : []);
       } catch (error) {
         if (error.name === 'AbortError') return;
         setMyCoursesError(error.message);
@@ -159,29 +203,14 @@ function MyPage() {
     try {
       setIsSavingNickname(true);
       setNicknameError(null);
-      const response = await fetch('http://43.200.233.19/api/members/me', {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({ nickname: trimmed }),
-      });
 
-      if (!response.ok) {
-        let message = '닉네임을 저장하지 못했습니다.';
-        try {
-          const errorBody = await response.json();
-          if (errorBody?.message) {
-            message = errorBody.message;
-          }
-        } catch (error) {
-          // ignore json parse error
-        }
-        throw new Error(message);
-      }
+      const updateRequestDto = { nickname: trimmed };
+      const updatedProfileDto = await MemberAPI.updateMemberProfile(updateRequestDto);
+      const updatedNickname = updatedProfileDto?.nickname ?? trimmed;
 
-      setNickname(trimmed);
+      setNickname(updatedNickname);
+      setTempNickname(updatedNickname);
+      setProfileError(null);
       setIsEditingNickname(false);
     } catch (error) {
       setNicknameError(error.message);
@@ -271,17 +300,17 @@ function MyPage() {
             )}
             {!myCoursesLoading && !myCoursesError && myCourses.length > 0 && (
               <ul className="mypage-course-list">
-                {myCourses.map((course) => (
-                  <li className="mypage-list-item" key={course.course_id || course.id}>
+                {myCourses.map((courseDto) => (
+                  <li className="mypage-list-item" key={courseDto.course_id}>
                     <div className="mypage-list-thumb">
-                      {course.photo ? (
-                        <img src={course.photo} alt={course.title} />
+                      {courseDto.photo ? (
+                        <img src={courseDto.photo} alt={courseDto.title} />
                       ) : (
                         <span className="mypage-thumb-placeholder">BC</span>
                       )}
                     </div>
                     <div className="mypage-list-text">
-                      <div className="mypage-list-title">{course.title}</div>
+                      <div className="mypage-list-title">{courseDto.title}</div>
                     </div>
                   </li>
                 ))}
