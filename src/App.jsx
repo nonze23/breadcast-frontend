@@ -9,13 +9,10 @@ import SearchPage from "./pages/SearchPage";
 import BakeryDetail from "./pages/BakeryDetail";
 import Signin from "./pages/Signin.jsx";
 import Signup from "./pages/Signup.jsx";
-import "./App.css";
+import BakeryTour from "./pages/BakeryTour.jsx";
+import BakeryTourForm from "./pages/BakeryTourForm.jsx";
 
-const BakeryTour = () => (
-  <div className="page-content">
-    <h2>빵지순례 페이지</h2>
-  </div>
-);
+import "./App.css";
 
 // 3. '사이드바 + 네비바'가 있는 페이지의 "틀"을 여기서 만듭니다.
 //    (새 파일 만들 필요 없이 App.jsx 안에 그냥 두세요)
@@ -48,6 +45,8 @@ function App() {
         <Route path="/search" element={<SearchPage />} />
         <Route path="/bakery/:bakeryId" element={<BakeryDetail />} />
         <Route path="/bakery-tour" element={<BakeryTour />} />
+        <Route path="/bakery-tour/write" element={<BakeryTourForm />} />
+
         <Route path="/mypage" element={<MyPage />} />
       </Route>
     </Routes>
