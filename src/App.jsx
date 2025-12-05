@@ -9,6 +9,8 @@ import SearchPage from "./pages/SearchPage";
 import BakeryDetail from "./pages/BakeryDetail";
 import Signin from "./pages/Signin.jsx";
 import Signup from "./pages/Signup.jsx";
+import FavoriteStoresPage from "./pages/FavoriteStoresPage";
+import "./App.css";
 import BakeryTour from "./pages/BakeryTour.jsx";
 import BakeryTourForm from "./pages/BakeryTourForm.jsx";
 
@@ -48,6 +50,7 @@ function App() {
         <Route path="/bakery-tour/write" element={<BakeryTourForm />} />
 
         <Route path="/mypage" element={<MyPage />} />
+        <Route path="/mypage/favorites/store" element={<FavoriteStoresPage />} />
       </Route>
     </Routes>
   );
