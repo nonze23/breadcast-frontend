@@ -1,19 +1,57 @@
-// src/components/home/HeroIntro.jsx
-
-import React from "react";
-import "./HeroIntro.css"; // 전용 스타일 파일 import
-import { Link } from "react-router-dom"; // 👈 1. 페이지 이동을 위해 Link를 import 합니다.
+import React, { useState, useEffect } from "react";
+import "./HeroIntro.css";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 import heroLogo from "../../assets/new logo.png";
 import introIcon from "../../assets/Group 300.png";
 
 function HeroIntro() {
+  const navigate = useNavigate();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const checkLoginStatus = () => {
+      const isAuth = localStorage.getItem("isLoggedIn");
+
+      console.log("localStorage isLoggedIn 값:", isAuth); //  디버깅
+      console.log("isAuth === 'true':", isAuth === "true"); //  디버깅
+
+      setIsLoggedIn(isAuth === "true");
+    };
+
+    checkLoginStatus();
+  }, []);
+
+  // 상태 변경 확인
+  console.log("현재 isLoggedIn 상태:", isLoggedIn);
+
+  const handleLogout = async () => {
+    try {
+      await axios.post(
+        `${import.meta.env.VITE_API_BASE_URL}/auth/logout`,
+        {},
+        {
+          withCredentials: true,
+        }
+      );
+
+      localStorage.removeItem("isLoggedIn");
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      localStorage.removeItem("userName");
+
+      setIsLoggedIn(false);
+      alert("로그아웃 되었습니다.");
+      navigate("/");
+    } catch (error) {
+      console.error("로그아웃 실패:", error);
+      alert("로그아웃에 실패했습니다.");
+    }
+  };
+
   return (
     <div className="hero-intro-container">
-      {/* -------------------- 1. 상단 배너 영역 (Hero) -------------------- */}
       <section className="hero-section">
-        {/* 배경 이미지는 CSS에서 처리합니다. */}
-
-        {/* ⬇️ 2. 이 헤더(네비게이션) 부분을 새로 추가합니다 ⬇️ */}
         <header className="hero-header">
           <div className="hero-logo">
             <Link to="/">
@@ -27,18 +65,35 @@ function HeroIntro() {
             <Link to="/bakery-tour">빵지순례</Link>
             <Link to="/mypage">마이페이지</Link>
           </nav>
-          <div className="hero-auth-buttons">
-            {/* 로그인 , 회원가입 */}
-            <button className="btn-login-hero">
-              <Link to="/signin"> signin</Link>
-            </button>
 
-            <button className="btn-signup-hero">
-              <Link to="/signup"> signup </Link>
-            </button>
+          {/*  디버깅: 둘 다 보이게 해서 확인 */}
+          <div className="hero-auth-buttons">
+            <p style={{ color: "white" }}>
+              로그인상태: {isLoggedIn ? "로그인됨" : "로그아웃됨"}
+            </p>
+
+            {!isLoggedIn ? (
+              <>
+                <button className="btn-login-hero">
+                  <Link to="/signin">signin</Link>
+                </button>
+                <button className="btn-signup-hero">
+                  <Link to="/signup">signup</Link>
+                </button>
+              </>
+            ) : (
+              <>
+                <button className="btn-logout-hero" onClick={handleLogout}>
+                  logout
+                </button>
+                <button>
+                  {" "}
+                  <Link to="/mypage">👤</Link>
+                </button>
+              </>
+            )}
           </div>
         </header>
-        {/* ⬆️ 여기까지가 새로 추가된 헤더입니다 ⬆️ */}
 
         <div className="hero-content">
           <h1>BreadCast</h1>
@@ -47,7 +102,6 @@ function HeroIntro() {
         </div>
       </section>
 
-      {/* -------------------- 2. 서비스 소개 영역 (Intro) -------------------- */}
       <section className="intro-section">
         <div className="intro-visuals">
           <img

@@ -1,0 +1,411 @@
+.bakery-tour-container {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* 왼쪽 투어 목록 섹션 */
+.tour-list-section {
+  width: 45%;
+  background-color: #f8f5f0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 검색 헤더 */
+.search-header {
+  position: sticky;
+  top: 0;
+  background-color: #efe8e4;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  z-index: 10;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.search-container {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: white;
+  border-radius: 25px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.search-input {
+  flex: 1;
+  border: none;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  outline: none;
+  background: transparent;
+}
+
+.search-input::placeholder {
+  color: #999;
+}
+
+.search-icon {
+  background: transparent;
+  border: none;
+  padding: 0.5rem 1rem;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.search-icon:hover {
+  opacity: 0.7;
+}
+
+.home-button {
+  background: white;
+  border: none;
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.home-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+}
+
+.tour-list {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.tour-card {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 3px solid transparent;
+}
+
+.tour-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.tour-card.selected {
+  border-color: #8b4513;
+  box-shadow: 0 4px 16px rgba(139, 69, 19, 0.2);
+}
+
+.tour-images {
+  display: flex;
+  height: 180px;
+  position: relative;
+}
+
+.mini-map {
+  flex: 1;
+  position: relative;
+  background: linear-gradient(135deg, #e8dcc8 0%, #d4c4a8 100%);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mini-map::before {
+  content: "🗺️";
+  font-size: 3rem;
+  opacity: 0.3;
+}
+
+.mini-map img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.map-marker {
+  position: absolute;
+  background: #8b4513;
+  color: white;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 13px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  border: 2px solid white;
+}
+
+.bakery-images {
+  flex: 1;
+  display: flex;
+}
+
+.bakery-thumbnail {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  border-left: 2px solid white;
+}
+
+.bakery-thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.bakery-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #f5e6d3 0%, #e8d4b8 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.placeholder-icon {
+  font-size: 2.5rem;
+  opacity: 0.4;
+}
+
+.bakery-number {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: #8b4513;
+  color: white;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.bakery-name {
+  position: absolute;
+  bottom: 8px;
+  left: 8px;
+  right: 8px;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tour-info {
+  padding: 1rem;
+}
+
+.tour-info h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.tour-region {
+  margin: 0 0 0.75rem 0;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.tour-likes {
+  font-size: 0.9rem;
+  color: #8b4513;
+  font-weight: 500;
+}
+
+/* 검색 결과 없음 */
+.no-results {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: #999;
+}
+
+.no-results p {
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin: 0 0 0.5rem 0;
+  color: #666;
+}
+
+.no-results span {
+  font-size: 0.9rem;
+  color: #999;
+}
+
+/* 오른쪽 지도 섹션 */
+.map-section {
+  flex: 1;
+  position: relative;
+  background-color: #e5e5e5;
+}
+
+.kakao-map {
+  width: 100%;
+  height: 100%;
+}
+
+.map-error {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  color: #e74c3c;
+  text-align: center;
+}
+
+.selected-tour-info {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: white;
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  max-width: 300px;
+  z-index: 5;
+}
+
+.selected-tour-info h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.selected-tour-info p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 1024px) {
+  .bakery-tour-container {
+    flex-direction: column;
+  }
+
+  .tour-list-section {
+    width: 100%;
+    height: 50vh;
+  }
+
+  .map-section {
+    height: 50vh;
+  }
+
+  .tour-images {
+    height: 140px;
+  }
+
+  .selected-tour-info {
+    top: 10px;
+    right: 10px;
+    padding: 0.75rem 1rem;
+    max-width: 250px;
+  }
+
+  .search-header {
+    padding: 0.75rem;
+  }
+
+  .home-button {
+    width: 40px;
+    height: 40px;
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .search-input {
+    font-size: 0.9rem;
+    padding: 0.6rem 0.85rem;
+  }
+
+  .search-icon {
+    font-size: 1rem;
+    padding: 0.4rem 0.85rem;
+  }
+
+  .home-button {
+    width: 38px;
+    height: 38px;
+    font-size: 1rem;
+  }
+
+  .tour-card {
+    border-radius: 8px;
+  }
+
+  .tour-images {
+    height: 120px;
+  }
+
+  .bakery-thumbnail {
+    border-left-width: 1px;
+  }
+
+  .tour-info h3 {
+    font-size: 1rem;
+  }
+
+  .tour-region,
+  .tour-likes {
+    font-size: 0.85rem;
+  }
+
+  .selected-tour-info {
+    font-size: 0.9rem;
+  }
+}
+
+/* 스크롤바 스타일 */
+.tour-list-section::-webkit-scrollbar {
+  width: 8px;
+}
+
+.tour-list-section::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.tour-list-section::-webkit-scrollbar-thumb {
+  background: #8b4513;
+  border-radius: 4px;
+}
+
+.tour-list-section::-webkit-scrollbar-thumb:hover {
+  background: #995a33;
+}

@@ -21,6 +21,7 @@ export default function Signin() {
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+])[A-Za-z\d!@#$%^&*()_+]{8,20}$/;
 
   // 로그인 처리 함수
+
   const handleLogin = async () => {
     // 유효성 검사
     if (!id_valid.test(id)) {
@@ -42,7 +43,7 @@ export default function Signin() {
 
     try {
       const response = await axios.post(
-        "/auth/login", // 상대 경로 (프록시를 탐)
+        `${import.meta.env.VITE_API_BASE_URL}/auth/login`,
         requestData,
         {
           withCredentials: true,
@@ -53,6 +54,21 @@ export default function Signin() {
       );
 
       console.log("로그인 성공:", response.data);
+
+      //  localStorage에 로그인 정보 저장
+      localStorage.setItem("isLoggedIn", "true");
+
+      // 서버에서 토큰을 응답으로 보내준다면 저장
+      if (response.data.accessToken) {
+        localStorage.setItem("accessToken", response.data.accessToken);
+      }
+      if (response.data.refreshToken) {
+        localStorage.setItem("refreshToken", response.data.refreshToken);
+      }
+      if (response.data.userName) {
+        localStorage.setItem("userName", response.data.userName);
+      }
+
       alert("로그인 성공!");
       navigate("/");
     } catch (error) {
@@ -76,7 +92,6 @@ export default function Signin() {
       }
     }
   };
-
   return (
     <div className="signin-container">
       {/* Left Side */}

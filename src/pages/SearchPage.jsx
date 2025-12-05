@@ -259,7 +259,7 @@ export default function SearchPage() {
 
                   {/* 빵집 정보 */}
                   <div className="bakery-info">
-                    <h3 className="bakery-name">{bakery.name}</h3>
+                    <h3 className="star">{bakery.name}</h3>
 
                     {/* 별점과 리뷰 수 */}
                     <div className="bakery-rating">
