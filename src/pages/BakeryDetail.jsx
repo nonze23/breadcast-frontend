@@ -28,7 +28,7 @@ export default function BakeryDetail() {
       setError(null);
       try {
         const res = await axios.get(
-          `http://43.200.233.19/api/bakeries/${bakeryId}`
+          `${import.meta.env.VITE_API_BASE_URL}/api/bakeries/${bakeryId}`
         );
 
         console.log("빵집 상세 응답:", res.data);
@@ -50,36 +50,98 @@ export default function BakeryDetail() {
   }, [bakeryId]);
 
   // 관심 가게 추가/삭제 처리
+
   const handleToggleFavorite = async () => {
     if (isFavoriteLoading) return;
+
+    // 로그인 상태 확인
+    const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+    console.log("로그인 상태:", isLoggedIn);
+
+    if (!isLoggedIn) {
+      alert("로그인이 필요한 서비스입니다.");
+      navigate("/signin");
+      return;
+    }
 
     setIsFavoriteLoading(true);
 
     try {
       if (isFavorite) {
-        await axios.delete(
-          `http://43.200.233.19/api/members/me/favorites/bakeries/${bakeryId}`
+        // 관심 가게 삭제
+        console.log(
+          "삭제 요청:",
+          `${
+            import.meta.env.VITE_API_BASE_URL
+          }/api/members/me/favorites/bakeries/${bakeryId}`
         );
+
+        const response = await axios.delete(
+          `${
+            import.meta.env.VITE_API_BASE_URL
+          }/api/members/me/favorites/bakeries/${bakeryId}`,
+          {
+            withCredentials: true, // 👈 쿠키 전송
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        console.log("삭제 응답:", response);
         setIsFavorite(false);
+        alert("관심 가게에서 제거되었습니다.");
       } else {
-        await axios.post(
-          `http://43.200.233.19/api/members/me/favorites/bakeries/${bakeryId}`
+        // 관심 가게 추가
+        console.log(
+          "추가 요청:",
+          `${
+            import.meta.env.VITE_API_BASE_URL
+          }/api/members/me/favorites/bakeries/${bakeryId}`
         );
+
+        const response = await axios.post(
+          `${
+            import.meta.env.VITE_API_BASE_URL
+          }/api/members/me/favorites/bakeries/${bakeryId}`,
+          {}, // 👈 빈 body
+          {
+            withCredentials: true, // 👈 쿠키 전송
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        console.log("추가 응답:", response);
         setIsFavorite(true);
+        alert("관심 가게에 추가되었습니다.");
       }
     } catch (err) {
       console.error("관심 가게 처리 실패:", err);
+      console.error("에러 응답:", err.response?.data);
+      console.error("에러 상태:", err.response?.status);
+      console.error("에러 헤더:", err.response?.headers);
 
-      if (err.response?.status === 401) {
-        alert("로그인이 필요한 서비스입니다.");
+      if (err.response?.status === 401 || err.response?.status === 403) {
+        alert("인증이 만료되었습니다. 다시 로그인해주세요.");
+        // localStorage 정리
+        localStorage.removeItem("isLoggedIn");
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        localStorage.removeItem("userName");
+        navigate("/signin");
       } else {
-        alert("관심 가게 처리에 실패했습니다. 다시 시도해주세요.");
+        alert(
+          `관심 가게 처리에 실패했습니다: ${
+            err.response?.data?.message || "다시 시도해주세요"
+          }`
+        );
       }
     } finally {
       setIsFavoriteLoading(false);
     }
   };
-
   // 카카오맵 초기화
   useEffect(() => {
     if (!bakery) return;
@@ -153,7 +215,7 @@ export default function BakeryDetail() {
     const fetchMenus = async () => {
       try {
         const res = await axios.get(
-          `http://43.200.233.19/api/bakeries/${bakeryId}/menus`
+          `${import.meta.env.VITE_API_BASE_URL}/api/bakeries/${bakeryId}/menus`
         );
 
         console.log("메뉴 응답:", res.data);
@@ -169,7 +231,9 @@ export default function BakeryDetail() {
     const fetchReviews = async () => {
       try {
         const res = await axios.get(
-          `http://43.200.233.19/api/bakeries/${bakeryId}/bakery-reviews`
+          `${
+            import.meta.env.VITE_API_BASE_URL
+          }/api/bakeries/${bakeryId}/bakery-reviews`
         );
 
         console.log("리뷰 응답:", res.data);

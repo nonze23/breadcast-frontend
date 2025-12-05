@@ -56,7 +56,7 @@ export default function Signup() {
 
     try {
       const response = await axios.post(
-        "http://43.200.233.19/auth/signup",
+        `${import.meta.env.VITE_API_BASE_URL}/auth/signup`,
         requestData,
         {
           withCredentials: true,

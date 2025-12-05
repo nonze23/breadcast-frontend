@@ -7,49 +7,33 @@
 
 /* 왼쪽 패널 */
 .detail-left-panel {
-  width: 400px;
+  width: 40%;
   background-color: white;
   display: flex;
   flex-direction: column;
   border-right: 1px solid #e0e0e0;
-}
-
-/* 사진 갤러리 - 2개 사진 나란히 표시 */
-.photo-gallery {
   position: relative;
-  width: 100%;
-  height: 280px;
-  background-color: #000;
-  flex-shrink: 0;
-  display: grid;
-  grid-template-columns: 1fr 1fr; /* 2개 나란히 */
-  gap: 2px;
-}
-
-/* 사진 스타일 */
-.bakery-photo {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  overflow-y: auto;
 }
 
 /* 닫기 버튼 */
 .close-btn {
   position: absolute;
-  top: 16px;
-  right: 16px;
-  background-color: rgba(255, 255, 255, 0.9);
-  border: none;
+  top: 20px;
+  right: 20px;
   width: 36px;
   height: 36px;
   border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.9);
+  border: none;
   font-size: 20px;
   cursor: pointer;
+  z-index: 10;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   transition: all 0.2s;
-  z-index: 10; /* 사진 위에 표시되도록 */
 }
 
 .close-btn:hover {
@@ -57,36 +41,91 @@
   transform: scale(1.1);
 }
 
+/* 사진 갤러리 */
+.photo-gallery {
+  width: 100%;
+  display: flex;
+  gap: 4px;
+  background-color: #f5f5f5;
+}
+
+.bakery-photo {
+  flex: 1;
+  height: 280px;
+  object-fit: cover;
+}
+
+.photo-gallery .bakery-photo:only-child {
+  width: 100%;
+}
+
 /* 빵집 헤더 */
 .bakery-header {
+  padding: 24px;
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding: 20px;
+  align-items: flex-start;
   border-bottom: 1px solid #e0e0e0;
 }
 
-.bakery-title {
-  font-size: 22px;
-  font-weight: 700;
-  color: #222;
-  margin: 0;
+.bakery-title-section {
+  flex: 1;
 }
 
-.favorite-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
+.bakery-title {
   font-size: 24px;
-  transition: transform 0.2s;
+  font-weight: 700;
+  color: #222;
+  margin: 0 0 8px 0;
+}
+
+.bakery-rating-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+}
+
+.star {
+  font-size: 16px;
+}
+
+.rating-value {
+  font-weight: 600;
+  color: #333;
+}
+
+.review-count {
+  color: #999;
+}
+
+/* 관심 버튼 */
+.favorite-btn {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid #e0e0e0;
+  background-color: white;
+  font-size: 24px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .favorite-btn:hover {
-  transform: scale(1.2);
+  border-color: #8b6f47;
+  transform: scale(1.1);
+}
+
+.favorite-btn.active {
+  border-color: #8b6f47;
+  background-color: #fff8f0;
 }
 
 .favorite-btn:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
@@ -95,28 +134,28 @@
   display: flex;
   border-bottom: 1px solid #e0e0e0;
   background-color: white;
-  flex-shrink: 0;
 }
 
 .tab-btn {
   flex: 1;
   padding: 16px;
   border: none;
-  background: none;
-  cursor: pointer;
+  background-color: transparent;
   font-size: 15px;
   font-weight: 500;
   color: #999;
-  position: relative;
+  cursor: pointer;
   transition: all 0.2s;
+  position: relative;
 }
 
 .tab-btn:hover {
-  color: #666;
+  color: #333;
 }
 
 .tab-btn.active {
-  color: #222;
+  color: #8b6f47;
+  font-weight: 600;
 }
 
 .tab-btn.active::after {
@@ -125,7 +164,7 @@
   bottom: 0;
   left: 0;
   right: 0;
-  height: 3px;
+  height: 2px;
   background-color: #8b6f47;
 }
 
@@ -133,30 +172,20 @@
 .tab-content {
   flex: 1;
   overflow-y: auto;
-  padding: 20px;
-}
-
-.tab-content::-webkit-scrollbar {
-  width: 8px;
-}
-
-.tab-content::-webkit-scrollbar-thumb {
-  background-color: #ddd;
-  border-radius: 4px;
+  padding: 24px;
 }
 
 /* 홈 탭 */
 .home-tab {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
 }
 
 .info-item {
   display: flex;
-  gap: 12px;
-  padding: 12px 0;
-  border-bottom: 1px solid #f0f0f0;
+  gap: 16px;
+  align-items: flex-start;
 }
 
 .info-icon {
@@ -167,67 +196,57 @@
 .info-text {
   flex: 1;
   display: flex;
-  flex-direction: column;
-  gap: 4px;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.info-label {
-  font-size: 14px;
+.info-value {
+  font-size: 15px;
   color: #333;
-  font-weight: 500;
-}
-
-.info-sub {
-  font-size: 13px;
-  color: #999;
+  line-height: 1.5;
 }
 
 .info-link {
-  font-size: 14px;
+  font-size: 15px;
   color: #4a90e2;
   text-decoration: none;
+  transition: color 0.2s;
 }
 
 .info-link:hover {
+  color: #357abd;
   text-decoration: underline;
 }
 
-.copy-text {
-  font-size: 12px;
-  color: #999;
-  margin-left: 8px;
+.copy-btn {
+  padding: 6px 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  background-color: white;
+  font-size: 13px;
+  color: #8b6f47;
   cursor: pointer;
+  transition: all 0.2s;
 }
 
-.copy-text:hover {
-  color: #666;
+.copy-btn:hover {
+  background-color: #f8f4ef;
+  border-color: #8b6f47;
 }
 
-/* 통계 섹션 */
-.stats-section {
-  display: flex;
-  justify-content: space-around;
-  padding: 20px;
-  background-color: #f8f8f8;
-  border-radius: 12px;
+/* 빵집 설명 */
+.bakery-description {
   margin-top: 12px;
+  padding: 16px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
 }
 
-.stat-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-}
-
-.stat-icon {
-  font-size: 24px;
-}
-
-.stat-value {
-  font-size: 16px;
-  font-weight: 600;
-  color: #333;
+.bakery-description p {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.6;
+  margin: 0;
 }
 
 /* 빈 메시지 */
@@ -235,20 +254,53 @@
   text-align: center;
   padding: 60px 20px;
   color: #999;
-  font-size: 14px;
+  font-size: 15px;
 }
 
-/* 오른쪽 패널 - 지도 */
+/* 로딩 & 에러 */
+.loading-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  font-size: 18px;
+  color: #666;
+}
+
+.error-message {
+  text-align: center;
+}
+
+.error-message p {
+  margin-bottom: 20px;
+  color: #e74c3c;
+  font-size: 16px;
+}
+
+.back-button {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  background-color: #8b6f47;
+  color: white;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.back-button:hover {
+  background-color: #6d5738;
+}
+
+/* 오른쪽 패널: 지도 */
 .detail-right-panel {
   flex: 1;
   background-color: #f5f5f5;
-  position: relative;
 }
 
 .detail-map-container {
   width: 100%;
   height: 100%;
-  position: relative;
 }
 
 .kakao-map {
@@ -262,53 +314,36 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  color: #999;
   font-size: 16px;
-  font-weight: 500;
   padding: 20px;
   text-align: center;
 }
 
-/* 로딩 */
-.loading-container {
-  width: 100%;
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 16px;
-  color: #999;
+/* 스크롤바 */
+.detail-left-panel::-webkit-scrollbar,
+.tab-content::-webkit-scrollbar {
+  width: 8px;
 }
 
-.error-message {
-  text-align: center;
+.detail-left-panel::-webkit-scrollbar-thumb,
+.tab-content::-webkit-scrollbar-thumb {
+  background-color: #ddd;
+  border-radius: 4px;
 }
 
-.error-message p {
-  font-size: 16px;
-  color: #e74c3c;
-  margin-bottom: 20px;
-}
-
-.back-button {
-  padding: 10px 24px;
-  background-color: #8b6f47;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;
-  transition: all 0.2s;
-}
-
-.back-button:hover {
-  background-color: #6f5738;
-  transform: translateY(-2px);
+.detail-left-panel::-webkit-scrollbar-thumb:hover,
+.tab-content::-webkit-scrollbar-thumb:hover {
+  background-color: #999;
 }
 
 /* 반응형 */
+@media (max-width: 1024px) {
+  .detail-left-panel {
+    width: 50%;
+  }
+}
+
 @media (max-width: 768px) {
   .bakery-detail-page {
     flex-direction: column;
@@ -324,7 +359,11 @@
     height: 30%;
   }
 
-  .photo-gallery {
+  .bakery-photo {
     height: 200px;
+  }
+
+  .bakery-title {
+    font-size: 20px;
   }
 }
