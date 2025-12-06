@@ -1,6 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import './FavoriteStoresPage.css';
+import React, { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import api from "../api/axiosConfig"; // ✅ api import 추가
+import "./FavoriteStoresPage.css";
 
 function FavoriteStoresPage() {
   const navigate = useNavigate();
@@ -13,51 +14,38 @@ function FavoriteStoresPage() {
   const markers = useRef([]);
 
   useEffect(() => {
-    const controller = new AbortController();
-
     const fetchFavoriteBakeries = async () => {
       try {
         setFavoriteBakeriesLoading(true);
         setFavoriteBakeriesError(null);
-        
-        const response = await fetch('http://43.200.233.19/api/members/me/favorites/bakeries', {
-          method: 'GET',
-          credentials: 'include',
-          signal: controller.signal,
-        });
 
-        if (!response.ok) {
-          // 500 에러 등 서버 에러의 경우 응답 본문에서 에러 메시지 추출 시도
-          let errorMessage = '즐겨찾기 가게 목록을 불러오지 못했습니다.';
-          try {
-            const errorData = await response.json();
-            if (errorData?.message) {
-              errorMessage = errorData.message;
-            } else if (errorData?.error) {
-              errorMessage = errorData.error;
-            }
-          } catch (e) {
-            // JSON 파싱 실패 시 기본 메시지 사용
-          }
-          throw new Error(`${errorMessage} (Status: ${response.status})`);
-        }
+        // ✅ fetch 대신 api 사용
+        const response = await api.get("/api/members/me/favorites/bakeries");
 
-        const result = await response.json();
-        
+        console.log("즐겨찾기 응답:", response.data);
+
         // API 응답 구조: { success: true, message: "...", data: [...] }
-        // Swagger 문서에 따르면 ApiResponseListGetFavoriteBakeriesResponse 형태
         let data = [];
-        if (result?.data && Array.isArray(result.data)) {
-          data = result.data;
-        } else if (Array.isArray(result)) {
-          data = result;
+        if (response.data?.data && Array.isArray(response.data.data)) {
+          data = response.data.data;
+        } else if (Array.isArray(response.data)) {
+          data = response.data;
         }
-        
+
+        console.log("즐겨찾기 목록:", data);
         setFavoriteBakeries(data);
       } catch (error) {
-        if (error.name === 'AbortError') return;
-        console.error('즐겨찾기 가게 목록 불러오기 실패:', error);
-        setFavoriteBakeriesError(error.message || '즐겨찾기 가게 목록을 불러오지 못했습니다.');
+        console.error("즐겨찾기 가게 목록 불러오기 실패:", error);
+
+        // ✅ 401은 인터셉터에서 자동 처리되므로 다른 에러만 처리
+        if (error.response?.status !== 401) {
+          const errorMessage =
+            error.response?.data?.message ||
+            error.response?.data?.error ||
+            "즐겨찾기 가게 목록을 불러오지 못했습니다.";
+
+          setFavoriteBakeriesError(errorMessage);
+        }
         setFavoriteBakeries([]);
       } finally {
         setFavoriteBakeriesLoading(false);
@@ -65,17 +53,16 @@ function FavoriteStoresPage() {
     };
 
     fetchFavoriteBakeries();
-    return () => controller.abort();
   }, []);
 
   useEffect(() => {
     const loadMap = () => {
       if (!window.kakao || !window.kakao.maps || !mapRef.current) {
-        setMapError('카카오 지도 객체를 불러오지 못했습니다.');
+        setMapError("카카오 지도 객체를 불러오지 못했습니다.");
         return;
       }
 
-      const center = new window.kakao.maps.LatLng(37.5665, 126.9780); // 서울 시청 근처 예시
+      const center = new window.kakao.maps.LatLng(37.5665, 126.978); // 서울 시청 근처 예시
       const options = {
         center,
         level: 5,
@@ -86,7 +73,9 @@ function FavoriteStoresPage() {
     };
 
     if (!import.meta.env.VITE_KAKAO_MAP_KEY) {
-      setMapError('.env 파일에 VITE_KAKAO_MAP_KEY가 설정되어 있는지 확인해주세요.');
+      setMapError(
+        ".env 파일에 VITE_KAKAO_MAP_KEY가 설정되어 있는지 확인해주세요."
+      );
       return;
     }
 
@@ -95,31 +84,40 @@ function FavoriteStoresPage() {
       return;
     }
 
-    const existingScript = document.querySelector('script[data-kakao-maps]');
+    const existingScript = document.querySelector("script[data-kakao-maps]");
     if (existingScript) {
-      existingScript.addEventListener('load', () => {
+      existingScript.addEventListener("load", () => {
         window.kakao.maps.load(loadMap);
       });
       return;
     }
 
-    const script = document.createElement('script');
-    const kakaoSdkUrl = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${import.meta.env.VITE_KAKAO_MAP_KEY}&autoload=false`;
+    const script = document.createElement("script");
+    const kakaoSdkUrl = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${
+      import.meta.env.VITE_KAKAO_MAP_KEY
+    }&autoload=false`;
     script.src = kakaoSdkUrl;
     script.async = true;
-    script.dataset.kakaoMaps = 'true';
+    script.dataset.kakaoMaps = "true";
     script.onload = () => {
       window.kakao.maps.load(loadMap);
     };
     script.onerror = () => {
-      setMapError('카카오 지도 스크립트를 불러오지 못했습니다. 네트워크 상태와 앱 키를 확인해주세요.');
+      setMapError(
+        "카카오 지도 스크립트를 불러오지 못했습니다. 네트워크 상태와 앱 키를 확인해주세요."
+      );
     };
     document.head.appendChild(script);
   }, []);
 
   // 즐겨찾기 가게 목록이 변경되면 지도에 마커 표시
   useEffect(() => {
-    if (!mapInstance.current || !window.kakao || !window.kakao.maps || favoriteBakeries.length === 0) {
+    if (
+      !mapInstance.current ||
+      !window.kakao ||
+      !window.kakao.maps ||
+      favoriteBakeries.length === 0
+    ) {
       return;
     }
 
@@ -128,18 +126,36 @@ function FavoriteStoresPage() {
     markers.current = [];
 
     // 빵집 위치 정보가 있다면 마커 추가
-    // 주의: GetFavoriteBakeriesResponse에는 위도/경도가 없으므로
-    // 주소를 기반으로 지오코딩하거나, 빵집 상세 정보를 가져와야 함
-    // 일단 지도는 표시하고 마커는 나중에 추가 가능하도록 구조만 만들어둠
     const bounds = new window.kakao.maps.LatLngBounds();
 
-    // TODO: 빵집의 위도/경도 정보가 필요함
-    // 현재는 지도만 표시하고, 향후 위도/경도 정보를 받으면 마커를 추가할 수 있도록 구조화
+    favoriteBakeries.forEach((bakery) => {
+      // ✅ 위도/경도 정보가 있으면 마커 추가
+      if (bakery.latitude && bakery.longitude) {
+        const position = new window.kakao.maps.LatLng(
+          bakery.latitude,
+          bakery.longitude
+        );
 
+        const marker = new window.kakao.maps.Marker({
+          position: position,
+          map: mapInstance.current,
+        });
+
+        // 마커 클릭 시 빵집 상세로 이동
+        window.kakao.maps.event.addListener(marker, "click", () => {
+          navigate(`/bakery/${bakery.id}`);
+        });
+
+        markers.current.push(marker);
+        bounds.extend(position);
+      }
+    });
+
+    // 마커가 있으면 지도 범위 조정
     if (markers.current.length > 0) {
       mapInstance.current.setBounds(bounds);
     }
-  }, [favoriteBakeries]);
+  }, [favoriteBakeries, navigate]);
 
   const handleBakeryClick = (bakeryId) => {
     navigate(`/bakery/${bakeryId}`);
@@ -152,58 +168,78 @@ function FavoriteStoresPage() {
         <section className="favorite-stores-left">
           <div className="favorite-stores-list-card">
             {favoriteBakeriesLoading && (
-              <p className="favorite-stores-status">즐겨찾기 가게를 불러오는 중...</p>
+              <p className="favorite-stores-status">
+                즐겨찾기 가게를 불러오는 중...
+              </p>
             )}
             {favoriteBakeriesError && !favoriteBakeriesLoading && (
               <p className="favorite-stores-error">{favoriteBakeriesError}</p>
             )}
-            {!favoriteBakeriesLoading && !favoriteBakeriesError && favoriteBakeries.length === 0 && (
-              <p className="favorite-stores-status">즐겨찾기한 가게가 없습니다.</p>
-            )}
-            {!favoriteBakeriesLoading && !favoriteBakeriesError && favoriteBakeries.length > 0 && (
-              <ul className="favorite-stores-list">
-                {favoriteBakeries.map((bakery) => (
-                  <li
-                    className="favorite-stores-item"
-                    key={bakery.id}
-                    onClick={() => handleBakeryClick(bakery.id)}
-                  >
-                    <div className="favorite-stores-images">
-                      <div className="favorite-stores-image">
-                        {bakery.photo1 ? (
-                          <img src={bakery.photo1} alt={bakery.name} />
-                        ) : (
-                          <span className="favorite-stores-placeholder">BC</span>
+            {!favoriteBakeriesLoading &&
+              !favoriteBakeriesError &&
+              favoriteBakeries.length === 0 && (
+                <p className="favorite-stores-status">
+                  즐겨찾기한 가게가 없습니다.
+                </p>
+              )}
+            {!favoriteBakeriesLoading &&
+              !favoriteBakeriesError &&
+              favoriteBakeries.length > 0 && (
+                <ul className="favorite-stores-list">
+                  {favoriteBakeries.map((bakery) => (
+                    <li
+                      className="favorite-stores-item"
+                      key={bakery.id}
+                      onClick={() => handleBakeryClick(bakery.id)}
+                    >
+                      <div className="favorite-stores-images">
+                        <div className="favorite-stores-image">
+                          {bakery.photo1 ? (
+                            <img src={bakery.photo1} alt={bakery.name} />
+                          ) : (
+                            <span className="favorite-stores-placeholder">
+                              BC
+                            </span>
+                          )}
+                        </div>
+                        <div className="favorite-stores-image">
+                          {bakery.photo2 ? (
+                            <img src={bakery.photo2} alt={bakery.name} />
+                          ) : (
+                            <span className="favorite-stores-placeholder">
+                              BC
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="favorite-stores-info">
+                        <div className="favorite-stores-name">
+                          {bakery.name}
+                        </div>
+                        {bakery.phone && (
+                          <div className="favorite-stores-phone">
+                            {bakery.phone}
+                          </div>
+                        )}
+                        {bakery.address && (
+                          <div className="favorite-stores-address">
+                            {bakery.address}
+                          </div>
                         )}
                       </div>
-                      <div className="favorite-stores-image">
-                        {bakery.photo2 ? (
-                          <img src={bakery.photo2} alt={bakery.name} />
-                        ) : (
-                          <span className="favorite-stores-placeholder">BC</span>
-                        )}
-                      </div>
-                    </div>
-                    <div className="favorite-stores-info">
-                      <div className="favorite-stores-name">{bakery.name}</div>
-                      {bakery.phone && (
-                        <div className="favorite-stores-phone">{bakery.phone}</div>
-                      )}
-                      {bakery.address && (
-                        <div className="favorite-stores-address">{bakery.address}</div>
-                      )}
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            )}
+                    </li>
+                  ))}
+                </ul>
+              )}
           </div>
         </section>
 
         {/* 오른쪽: 지도 영역 */}
         <section className="favorite-stores-right">
           <div className="favorite-stores-map" ref={mapRef}>
-            {mapError && <div className="favorite-stores-map-error">{mapError}</div>}
+            {mapError && (
+              <div className="favorite-stores-map-error">{mapError}</div>
+            )}
           </div>
         </section>
       </div>

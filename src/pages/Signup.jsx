@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import signupImg from "../assets/signup.png";
 import axios from "axios";
 import "./Signup.css";
+import api from "../api/axiosConfig";
 
 export default function Signup() {
   const navigate = useNavigate();

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../api/axiosConfig";
 import "./SearchPage.css";
 
 export default function SearchPage() {
@@ -25,9 +25,9 @@ export default function SearchPage() {
       setLoading(true);
       try {
         // ✅ keyword는 항상 보내기 (빈 문자열이라도)
-        const url = `http://43.200.233.19/api/bakeries?keyword=${keyword}&sort=${sortBy}`;
-
-        const res = await axios.get(url);
+        const res = await api.get(
+          `/api/bakeries?keyword=${keyword}&sort=${sortBy}`
+        );
 
         console.log("전체 응답:", res.data);
 

@@ -2,7 +2,7 @@ import { useNavigate, Link } from "react-router-dom";
 import signinImg from "../assets/signin.png";
 import "./Signin.css";
 import { useState } from "react";
-import axios from "axios";
+import api from "../api/axiosConfig";
 
 export default function Signin() {
   const navigate = useNavigate();
@@ -42,16 +42,7 @@ export default function Signin() {
     console.log("전송 데이터:", requestData);
 
     try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}/auth/login`,
-        requestData,
-        {
-          withCredentials: true,
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await api.post("/auth/login", requestData);
 
       console.log("로그인 성공:", response.data);
 
