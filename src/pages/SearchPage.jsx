@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../api/axiosConfig"; // ✅ 이미 올바름
 import "./SearchPage.css";
 
 export default function SearchPage() {
@@ -24,10 +24,13 @@ export default function SearchPage() {
     const fetchBakery = async () => {
       setLoading(true);
       try {
-        // ✅ keyword는 항상 보내기 (빈 문자열이라도)
-        const url = `http://43.200.233.19/api/bakeries?keyword=${keyword}&sort=${sortBy}`;
-
-        const res = await axios.get(url);
+        // ✅ api.get 사용 + params 옵션
+        const res = await api.get("/api/bakeries", {
+          params: {
+            keyword: keyword,
+            sort: sortBy,
+          },
+        });
 
         console.log("전체 응답:", res.data);
 
@@ -142,7 +145,7 @@ export default function SearchPage() {
     if (markers.current.length > 0) {
       mapInstance.current.setBounds(bounds);
     }
-  }, [list]);
+  }, [list, navigate]); // ✅ navigate 의존성 추가
 
   // 드롭다운 외부 클릭 감지
   useEffect(() => {

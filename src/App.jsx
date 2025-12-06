@@ -50,10 +50,14 @@ function App() {
         <Route path="/bakery-tour/write" element={<BakeryTourForm />} />
 
         <Route path="/mypage" element={<MyPage />} />
-        <Route path="/mypage/favorites/store" element={<FavoriteStoresPage />} />
+        <Route
+          path="/mypage/favorites/store"
+          element={<FavoriteStoresPage />}
+        />
       </Route>
     </Routes>
   );
 }
 
 export default App;
+//        <Route path="/mypage/reviews/store" element={<MyReview />}></Route>

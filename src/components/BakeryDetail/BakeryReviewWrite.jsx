@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axios from "axios";
+import api from "../../api/axiosConfig"; // ✅ axios 대신 api import
 import "./BakeryReviewWrite.css";
 
 function BakeryReviewWrite({ bakeryId, onCancel, onSubmitSuccess }) {
@@ -25,14 +25,21 @@ function BakeryReviewWrite({ bakeryId, onCancel, onSubmitSuccess }) {
 
     try {
       setSubmitting(true);
-      await axios.post(`http://43.200.233.19/api/bakeries/${bakeryId}/bakery-reviews`, payload, {
-        headers: { "Content-Type": "application/json" },
-        withCredentials: true,
-      });
+
+      // ✅ api.post 사용
+      await api.post(`/api/bakeries/${bakeryId}/bakery-reviews`, payload);
+
       alert("리뷰가 저장되었습니다.");
       onSubmitSuccess?.();
     } catch (submitError) {
-      setError(submitError.response?.data?.message || "리뷰 저장에 실패했습니다.");
+      console.error("리뷰 저장 실패:", submitError);
+
+      // ✅ 401은 인터셉터에서 자동 처리
+      if (submitError.response?.status !== 401) {
+        setError(
+          submitError.response?.data?.message || "리뷰 저장에 실패했습니다."
+        );
+      }
     } finally {
       setSubmitting(false);
     }
@@ -76,4 +83,3 @@ function BakeryReviewWrite({ bakeryId, onCancel, onSubmitSuccess }) {
 }
 
 export default BakeryReviewWrite;
-

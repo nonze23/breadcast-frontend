@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../api/axiosConfig";
 import BakeryMenu from "../components/BakeryDetail/BakeryMenu";
 import BakeryReview from "../components/BakeryDetail/BakeryReview";
 import "./BakeryDetail.css";
@@ -27,9 +27,7 @@ export default function BakeryDetail() {
       setLoading(true);
       setError(null);
       try {
-        const res = await axios.get(
-          `${import.meta.env.VITE_API_BASE_URL}/api/bakeries/${bakeryId}`
-        );
+        const res = await api.get(`/api/bakeries/${bakeryId}`);
 
         console.log("빵집 상세 응답:", res.data);
 
@@ -50,7 +48,6 @@ export default function BakeryDetail() {
   }, [bakeryId]);
 
   // 관심 가게 추가/삭제 처리
-
   const handleToggleFavorite = async () => {
     if (isFavoriteLoading) return;
 
@@ -66,82 +63,76 @@ export default function BakeryDetail() {
 
     setIsFavoriteLoading(true);
 
+    // Optimistic UI 업데이트
+    const previousState = isFavorite;
+    setIsFavorite(!isFavorite);
+
     try {
-      if (isFavorite) {
+      if (previousState) {
         // 관심 가게 삭제
         console.log(
           "삭제 요청:",
-          `${
-            import.meta.env.VITE_API_BASE_URL
-          }/api/members/me/favorites/bakeries/${bakeryId}`
+          `/api/members/me/favorites/bakeries/${bakeryId}`
         );
 
-        const response = await axios.delete(
-          `${
-            import.meta.env.VITE_API_BASE_URL
-          }/api/members/me/favorites/bakeries/${bakeryId}`,
-          {
-            withCredentials: true, // 👈 쿠키 전송
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
+        const response = await api.delete(
+          `/api/members/me/favorites/bakeries/${bakeryId}`
         );
 
         console.log("삭제 응답:", response);
-        setIsFavorite(false);
         alert("관심 가게에서 제거되었습니다.");
       } else {
         // 관심 가게 추가
         console.log(
           "추가 요청:",
-          `${
-            import.meta.env.VITE_API_BASE_URL
-          }/api/members/me/favorites/bakeries/${bakeryId}`
+          `/api/members/me/favorites/bakeries/${bakeryId}`
         );
 
-        const response = await axios.post(
-          `${
-            import.meta.env.VITE_API_BASE_URL
-          }/api/members/me/favorites/bakeries/${bakeryId}`,
-          {}, // 👈 빈 body
-          {
-            withCredentials: true, // 👈 쿠키 전송
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
+        const response = await api.post(
+          `/api/members/me/favorites/bakeries/${bakeryId}`,
+          {} // 빈 body
         );
 
         console.log("추가 응답:", response);
-        setIsFavorite(true);
         alert("관심 가게에 추가되었습니다.");
       }
     } catch (err) {
       console.error("관심 가게 처리 실패:", err);
       console.error("에러 응답:", err.response?.data);
       console.error("에러 상태:", err.response?.status);
-      console.error("에러 헤더:", err.response?.headers);
 
-      if (err.response?.status === 401 || err.response?.status === 403) {
-        alert("인증이 만료되었습니다. 다시 로그인해주세요.");
-        // localStorage 정리
-        localStorage.removeItem("isLoggedIn");
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
-        localStorage.removeItem("userName");
-        navigate("/signin");
-      } else {
-        alert(
-          `관심 가게 처리에 실패했습니다: ${
-            err.response?.data?.message || "다시 시도해주세요"
-          }`
-        );
+      // 에러 시 이전 상태로 롤백
+      setIsFavorite(previousState);
+
+      // 401은 인터셉터에서 자동 처리하므로 제외
+      if (err.response?.status !== 401) {
+        // 400 에러 상세 처리
+        if (err.response?.status === 400) {
+          const errorMessage =
+            err.response?.data?.message || "잘못된 요청입니다.";
+
+          // 중복 등록 에러인 경우
+          if (errorMessage.includes("이미") || errorMessage.includes("등록")) {
+            alert("이미 관심 가게로 등록되어 있습니다.");
+            // 실제 상태와 동기화
+            setIsFavorite(true);
+          } else {
+            alert(`오류: ${errorMessage}`);
+          }
+        } else {
+          // 기타 에러
+          alert(
+            `관심 가게 처리에 실패했습니다: ${
+              err.response?.data?.message || "다시 시도해주세요"
+            }`
+          );
+        }
       }
     } finally {
       setIsFavoriteLoading(false);
     }
   };
+
   // 카카오맵 초기화
   useEffect(() => {
     if (!bakery) return;
@@ -214,9 +205,7 @@ export default function BakeryDetail() {
   useEffect(() => {
     const fetchMenus = async () => {
       try {
-        const res = await axios.get(
-          `${import.meta.env.VITE_API_BASE_URL}/api/bakeries/${bakeryId}/menus`
-        );
+        const res = await api.get(`/api/bakeries/${bakeryId}/menus`);
 
         console.log("메뉴 응답:", res.data);
 
@@ -230,11 +219,7 @@ export default function BakeryDetail() {
 
     const fetchReviews = async () => {
       try {
-        const res = await axios.get(
-          `${
-            import.meta.env.VITE_API_BASE_URL
-          }/api/bakeries/${bakeryId}/bakery-reviews`
-        );
+        const res = await api.get(`/api/bakeries/${bakeryId}/bakery-reviews`);
 
         console.log("리뷰 응답:", res.data);
 
@@ -371,7 +356,7 @@ export default function BakeryDetail() {
                   <div className="info-text">
                     <a
                       href={bakery.URL}
-                      tsarget="_blank"
+                      target="_blank"
                       rel="noopener noreferrer"
                       className="info-link"
                     >

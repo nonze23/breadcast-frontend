@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import axios from "axios";
+import api from "../../api/axiosConfig"; // ✅ axios 대신 api import
 import BakeryReviewWrite from "./BakeryReviewWrite";
 import "./BakeryReview.css";
 
@@ -36,7 +36,7 @@ function BakeryReview({ reviews }) {
     }
 
     const targetReview = localReviews.find(
-      (review) => (review.review_id || review.id) === reviewId,
+      (review) => (review.review_id || review.id) === reviewId
     );
     if (!targetReview) {
       alert("리뷰 정보를 찾을 수 없습니다.");
@@ -44,29 +44,30 @@ function BakeryReview({ reviews }) {
     }
     try {
       setSubmitting(true);
-      await axios.patch(
-        `http://43.200.233.19/api/bakery-reviews/${reviewId}`,
-        {
-          text: trimmed,
-          rating: targetReview.rating,
-          photo: targetReview.photo,
-        },
-        {
-          headers: { "Content-Type": "application/json" },
-          withCredentials: true,
-        },
-      );
+
+      // ✅ api.patch 사용
+      await api.patch(`/api/bakery-reviews/${reviewId}`, {
+        text: trimmed,
+        rating: targetReview.rating,
+        photo: targetReview.photo,
+      });
+
       setLocalReviews((prev) =>
         prev.map((review) =>
           (review.review_id || review.id) === reviewId
             ? { ...review, content: trimmed, text: trimmed }
-            : review,
-        ),
+            : review
+        )
       );
       handleCancelEdit();
       alert("리뷰가 수정되었습니다.");
     } catch (error) {
-      alert(error.response?.data?.message || "리뷰를 수정하지 못했습니다.");
+      console.error("리뷰 수정 실패:", error);
+
+      // ✅ 401은 인터셉터에서 자동 처리
+      if (error.response?.status !== 401) {
+        alert(error.response?.data?.message || "리뷰를 수정하지 못했습니다.");
+      }
     } finally {
       setSubmitting(false);
     }
@@ -74,15 +75,23 @@ function BakeryReview({ reviews }) {
 
   const handleDelete = async (reviewId) => {
     if (!window.confirm("리뷰를 삭제하시겠습니까?")) return;
+
     try {
-      await axios.delete(`http://43.200.233.19/api/bakery-reviews/${reviewId}`, {
-        withCredentials: true,
-      });
+      // ✅ api.delete 사용
+      await api.delete(`/api/bakery-reviews/${reviewId}`);
+
       setLocalReviews((prev) =>
-        prev.filter((review) => (review.review_id || review.id) !== reviewId),
+        prev.filter((review) => (review.review_id || review.id) !== reviewId)
       );
+
+      alert("리뷰가 삭제되었습니다.");
     } catch (error) {
-      alert(error.response?.data?.message || "리뷰를 삭제하지 못했습니다.");
+      console.error("리뷰 삭제 실패:", error);
+
+      // ✅ 401은 인터셉터에서 자동 처리
+      if (error.response?.status !== 401) {
+        alert(error.response?.data?.message || "리뷰를 삭제하지 못했습니다.");
+      }
     }
   };
 
@@ -113,14 +122,24 @@ function BakeryReview({ reviews }) {
           const reviewId = review.review_id || review.id;
           const isEditing = editingReviewId === reviewId;
           return (
-            <div key={reviewId || `${review.writer}-${review.date}`} className="bakery-review-item">
+            <div
+              key={reviewId || `${review.writer}-${review.date}`}
+              className="bakery-review-item"
+            >
               <div className="bakery-review-header">
                 <div className="bakery-review-user">
                   <div className="bakery-review-avatar">👤</div>
-                  <span className="bakery-review-name">{review.userName || review.writer}</span>
+                  <span className="bakery-review-name">
+                    {review.userName || review.writer}
+                  </span>
                 </div>
                 <div className="bakery-review-actions">
-                  <button type="button" onClick={() => handleEditClick(reviewId, review.content || review.text)}>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      handleEditClick(reviewId, review.content || review.text)
+                    }
+                  >
                     수정
                   </button>
                   <span>|</span>
@@ -144,16 +163,26 @@ function BakeryReview({ reviews }) {
                     rows={4}
                   />
                   <div className="bakery-review-edit-actions">
-                    <button type="button" onClick={handleCancelEdit} disabled={submitting}>
+                    <button
+                      type="button"
+                      onClick={handleCancelEdit}
+                      disabled={submitting}
+                    >
                       취소
                     </button>
-                    <button type="button" onClick={() => handleSave(reviewId)} disabled={submitting}>
+                    <button
+                      type="button"
+                      onClick={() => handleSave(reviewId)}
+                      disabled={submitting}
+                    >
                       {submitting ? "저장 중..." : "저장"}
                     </button>
                   </div>
                 </div>
               ) : (
-                <div className="bakery-review-text">{review.content || review.text}</div>
+                <div className="bakery-review-text">
+                  {review.content || review.text}
+                </div>
               )}
             </div>
           );

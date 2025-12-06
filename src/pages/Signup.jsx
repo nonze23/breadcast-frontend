@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import signupImg from "../assets/signup.png";
-import axios from "axios";
+import api from "../api/axiosConfig"; // ✅ axios 대신 api import
 import "./Signup.css";
 
 export default function Signup() {
@@ -55,16 +55,8 @@ export default function Signup() {
     console.log("전송 데이터:", requestData);
 
     try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}/auth/signup`,
-        requestData,
-        {
-          withCredentials: true,
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      // ✅ api.post 사용 + 간소화
+      const response = await api.post("/auth/signup", requestData);
 
       console.log("회원가입 성공:", response.data);
       alert("회원가입 성공! 로그인 페이지로 이동합니다.");

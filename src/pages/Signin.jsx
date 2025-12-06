@@ -2,7 +2,7 @@ import { useNavigate, Link } from "react-router-dom";
 import signinImg from "../assets/signin.png";
 import "./Signin.css";
 import { useState } from "react";
-import axios from "axios";
+import api from "../api/axiosConfig"; // ✅ axios 대신 api import
 
 export default function Signin() {
   const navigate = useNavigate();
@@ -21,7 +21,6 @@ export default function Signin() {
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+])[A-Za-z\d!@#$%^&*()_+]{8,20}$/;
 
   // 로그인 처리 함수
-
   const handleLogin = async () => {
     // 유효성 검사
     if (!id_valid.test(id)) {
@@ -42,16 +41,8 @@ export default function Signin() {
     console.log("전송 데이터:", requestData);
 
     try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}/auth/login`,
-        requestData,
-        {
-          withCredentials: true,
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      // ✅ api.post 사용 + 간소화
+      const response = await api.post("/auth/login", requestData);
 
       console.log("로그인 성공:", response.data);
 
@@ -92,6 +83,7 @@ export default function Signin() {
       }
     }
   };
+
   return (
     <div className="signin-container">
       {/* Left Side */}
