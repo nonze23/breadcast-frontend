@@ -275,7 +275,7 @@ export default function SearchPage() {
 
                     {/* 한줄 소개 */}
                     {bakery.description && (
-                      <p className="bakery-description">{bakery.description}</p>
+                      <p className="bakery-description">{bakery.inform}</p>
                     )}
 
                     {/* 위치 */}

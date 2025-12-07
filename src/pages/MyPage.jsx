@@ -259,9 +259,7 @@ function MyPage() {
               {nicknameError && (
                 <p className="mypage-inline-error">{nicknameError}</p>
               )}
-              {profileError && !isEditingNickname && (
-                <p className="mypage-inline-error">{profileError}</p>
-              )}
+
               {!isEditingNickname && !profileLoading && (
                 <button
                   type="button"
@@ -324,3 +322,6 @@ function MyPage() {
 }
 
 export default MyPage;
+/*{profileError && !isEditingNickname && (
+                <p className="mypage-inline-error">{profileError}</p>
+              )} */
