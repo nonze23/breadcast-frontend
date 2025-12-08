@@ -89,4 +89,77 @@
   cursor: not-allowed;
 }
 
+/* 파일 업로드 관련 스타일 */
+.file-upload-section {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.file-upload-button {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #d09052;
+  color: #fff;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  text-align: center;
+  transition: background-color 0.2s;
+}
+
+.file-upload-button:hover {
+  background-color: #b87a3f;
+}
+
+.file-remove-button {
+  padding: 10px 20px;
+  background-color: #f5e1cf;
+  color: #7a4c2a;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.2s;
+}
+
+.file-remove-button:hover {
+  background-color: #e3cbb1;
+}
+
+.file-info {
+  margin-top: 8px;
+  padding: 8px 12px;
+  background-color: #fff;
+  border-radius: 8px;
+  border: 1px solid #e3cbb1;
+}
+
+.file-info p {
+  margin: 4px 0;
+  font-size: 14px;
+  color: #4a2d17;
+}
+
+.file-size {
+  color: #7a4c2a;
+  font-size: 12px;
+}
+
+.image-preview {
+  margin-top: 12px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #e3cbb1;
+  max-width: 100%;
+}
+
+.image-preview img {
+  width: 100%;
+  height: auto;
+  max-height: 300px;
+  object-fit: contain;
+  display: block;
+}
+
 
