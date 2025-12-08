@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./HeroIntro.css";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
+import api from "../../api/axiosConfig"; // ✅ axios 대신 api import
 import heroLogo from "../../assets/new logo.png";
 import introIcon from "../../assets/Group 300.png";
 
@@ -27,25 +27,37 @@ function HeroIntro() {
 
   const handleLogout = async () => {
     try {
-      await axios.post(
-        `${import.meta.env.VITE_API_BASE_URL}/auth/logout`,
-        {},
-        {
-          withCredentials: true,
-        }
-      );
+      // ✅ api.post 사용
+      await api.post("/auth/logout");
 
+      // ✅ localStorage 모든 로그인 관련 정보 삭제
       localStorage.removeItem("isLoggedIn");
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
       localStorage.removeItem("userName");
+      localStorage.removeItem("nickname"); // ✅ 닉네임도 삭제
 
       setIsLoggedIn(false);
       alert("로그아웃 되었습니다.");
       navigate("/");
     } catch (error) {
       console.error("로그아웃 실패:", error);
-      alert("로그아웃에 실패했습니다.");
+
+      // ✅ 로그아웃 실패해도 로컬 데이터는 삭제
+      localStorage.removeItem("isLoggedIn");
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      localStorage.removeItem("userName");
+      localStorage.removeItem("nickname");
+
+      setIsLoggedIn(false);
+
+      // ✅ 401은 인터셉터에서 자동 처리
+      if (error.response?.status !== 401) {
+        alert("로그아웃에 실패했습니다.");
+      }
+
+      navigate("/");
     }
   };
 
@@ -87,7 +99,6 @@ function HeroIntro() {
                   logout
                 </button>
                 <button>
-                  {" "}
                   <Link to="/mypage">👤</Link>
                 </button>
               </>
