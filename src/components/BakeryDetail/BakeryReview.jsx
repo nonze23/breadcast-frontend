@@ -1,8 +1,47 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import api from "../../api/axiosConfig"; // ✅ axios 대신 api import
 import BakeryReviewWrite from "./BakeryReviewWrite";
 import "./BakeryReview.css";
+
+const REVIEW_ID_KEYS = [
+  "reviewId",
+  "ReviewId",
+  "reviewID",
+  "ReviewID",
+  "review_id",
+  "bakeryReviewId",
+  "BakeryReviewId",
+  "bakeryReviewID",
+  "BakeryReviewID",
+  "bakery_review_id",
+];
+
+const normalizeReviewId = (value) => {
+  if (value === null || value === undefined) return null;
+  const normalized = String(value).trim();
+  return normalized || null;
+};
+
+const getReviewIdFromObject = (review) => {
+  if (!review || typeof review !== "object") return null;
+
+  for (const key of REVIEW_ID_KEYS) {
+    const candidate = normalizeReviewId(review[key]);
+    if (candidate) return candidate;
+  }
+
+  return null;
+};
+
+const buildReviewMatchKey = (bakeryIdValue, textValue, dateValue) => {
+  const bakeryPart = normalizeReviewId(bakeryIdValue) || "";
+  const textPart = (textValue ?? "").toString().trim();
+  const datePart = (dateValue ?? "").toString().trim();
+
+  if (!bakeryPart && !textPart) return null;
+  return `${bakeryPart}::${textPart}::${datePart}`;
+};
 
 function BakeryReview({ reviews }) {
   const { bakeryId } = useParams();
@@ -11,6 +50,7 @@ function BakeryReview({ reviews }) {
   const [editingReviewId, setEditingReviewId] = useState(null);
   const [editingContent, setEditingContent] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [reviewIdMap, setReviewIdMap] = useState({});
 
   useEffect(() => {
     setLocalReviews(reviews ?? []);
@@ -18,8 +58,105 @@ function BakeryReview({ reviews }) {
     setEditingContent("");
   }, [reviews]);
 
+  useEffect(() => {
+    let isMounted = true;
+    const isLoggedIn =
+      typeof window !== "undefined" &&
+      window.localStorage?.getItem("isLoggedIn") === "true";
+
+    if (!isLoggedIn) {
+      setReviewIdMap({});
+      return undefined;
+    }
+
+    const fetchMyBakeryReviews = async () => {
+      try {
+        const response = await api.get("/api/members/me/bakery-reviews");
+        const payload = response.data?.data ?? response.data ?? [];
+        if (!Array.isArray(payload)) return;
+
+        const nextMap = {};
+        payload.forEach((item) => {
+          const normalizedId = normalizeReviewId(
+            item.reviewId ??
+              item.bakeryReviewId ??
+              item.review_id ??
+              item.id
+          );
+          if (!normalizedId) return;
+
+          const bakeryKey =
+            normalizeReviewId(
+              item.bakeryId ?? item.bakery_id ?? item.bakery?.id
+            ) || "";
+          const matchKey = buildReviewMatchKey(
+            bakeryKey,
+            item.text ?? item.content ?? "",
+            item.date ?? item.createdAt ?? ""
+          );
+          if (matchKey) {
+            nextMap[matchKey] = normalizedId;
+          }
+        });
+
+        if (isMounted) {
+          setReviewIdMap(nextMap);
+        }
+      } catch (error) {
+        console.error("내가 작성한 리뷰 목록 불러오기 실패:", error);
+      }
+    };
+
+    fetchMyBakeryReviews();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [bakeryId]);
+
+  const resolveReviewId = useCallback(
+    (review) => {
+      const directId = getReviewIdFromObject(review);
+      if (directId) return directId;
+
+      const candidateKeys = [];
+      const primaryKey = buildReviewMatchKey(
+        review?.bakeryId ??
+          review?.bakery_id ??
+          review?.bakery?.id ??
+          bakeryId,
+        review?.text ?? review?.content ?? "",
+        review?.date ?? review?.createdAt ?? ""
+      );
+      if (primaryKey) candidateKeys.push(primaryKey);
+
+      const fallbackKey = buildReviewMatchKey(
+        review?.bakeryId ??
+          review?.bakery_id ??
+          review?.bakery?.id ??
+          bakeryId,
+        review?.text ?? review?.content ?? "",
+        ""
+      );
+      if (fallbackKey) candidateKeys.push(fallbackKey);
+
+      for (const key of candidateKeys) {
+        const mapped = reviewIdMap[key];
+        if (mapped) return mapped;
+      }
+
+      return null;
+    },
+    [bakeryId, reviewIdMap]
+  );
+
   const handleEditClick = (reviewId, text = "") => {
-    setEditingReviewId(reviewId);
+    const resolvedId = normalizeReviewId(reviewId);
+    if (!resolvedId) {
+      alert("리뷰 ID를 찾을 수 없어 수정할 수 없습니다.");
+      return;
+    }
+    setEditingReviewId(resolvedId);
     setEditingContent(text);
   };
 
@@ -29,6 +166,11 @@ function BakeryReview({ reviews }) {
   };
 
   const handleSave = async (reviewId) => {
+    const resolvedId = normalizeReviewId(reviewId);
+    if (!resolvedId) {
+      alert("리뷰 ID를 확인할 수 없어 수정할 수 없습니다.");
+      return;
+    }
     const trimmed = editingContent.trim();
     if (!trimmed) {
       alert("내용을 입력해주세요.");
@@ -36,7 +178,7 @@ function BakeryReview({ reviews }) {
     }
 
     const targetReview = localReviews.find(
-      (review) => (review.review_id || review.id) === reviewId
+      (review) => resolveReviewId(review) === resolvedId
     );
     if (!targetReview) {
       alert("리뷰 정보를 찾을 수 없습니다.");
@@ -46,18 +188,24 @@ function BakeryReview({ reviews }) {
       setSubmitting(true);
 
       // ✅ api.patch 사용
-      await api.patch(`/api/bakery-reviews/${reviewId}`, {
+      await api.patch(`/api/bakery-reviews/${resolvedId}`, {
         text: trimmed,
         rating: targetReview.rating,
         photo: targetReview.photo,
       });
 
       setLocalReviews((prev) =>
-        prev.map((review) =>
-          (review.review_id || review.id) === reviewId
-            ? { ...review, content: trimmed, text: trimmed }
-            : review
-        )
+        prev.map((review) => {
+          const currentId = resolveReviewId(review);
+          return currentId === resolvedId
+            ? {
+                ...review,
+                reviewId: resolvedId,
+                content: trimmed,
+                text: trimmed,
+              }
+            : review;
+        })
       );
       handleCancelEdit();
       alert("리뷰가 수정되었습니다.");
@@ -75,13 +223,18 @@ function BakeryReview({ reviews }) {
 
   const handleDelete = async (reviewId) => {
     if (!window.confirm("리뷰를 삭제하시겠습니까?")) return;
+    const resolvedId = normalizeReviewId(reviewId);
+    if (!resolvedId) {
+      alert("리뷰 ID를 확인할 수 없어 삭제할 수 없습니다.");
+      return;
+    }
 
     try {
       // ✅ api.delete 사용
-      await api.delete(`/api/bakery-reviews/${reviewId}`);
+      await api.delete(`/api/bakery-reviews/${resolvedId}`);
 
       setLocalReviews((prev) =>
-        prev.filter((review) => (review.review_id || review.id) !== reviewId)
+        prev.filter((review) => resolveReviewId(review) !== resolvedId)
       );
 
       alert("리뷰가 삭제되었습니다.");
@@ -118,12 +271,15 @@ function BakeryReview({ reviews }) {
     <div className="bakery-review-wrapper">
       <Toolbar onWriteClick={() => setIsWriting(true)} />
       <div className="bakery-review-list">
-        {localReviews.map((review) => {
-          const reviewId = review.review_id || review.id;
-          const isEditing = editingReviewId === reviewId;
+        {localReviews.map((review, index) => {
+          const reviewId = resolveReviewId(review);
+          const isEditing =
+            editingReviewId !== null && editingReviewId === reviewId;
+          const reviewKey =
+            reviewId || `${review.writer || "review"}-${review.date || index}`;
           return (
             <div
-              key={reviewId || `${review.writer}-${review.date}`}
+              key={reviewKey}
               className="bakery-review-item"
             >
               <div className="bakery-review-header">
@@ -143,7 +299,10 @@ function BakeryReview({ reviews }) {
                     수정
                   </button>
                   <span>|</span>
-                  <button type="button" onClick={() => handleDelete(reviewId)}>
+                  <button
+                    type="button"
+                    onClick={() => handleDelete(reviewId)}
+                  >
                     삭제
                   </button>
                 </div>
