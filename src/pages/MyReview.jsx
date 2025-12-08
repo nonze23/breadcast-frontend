@@ -143,7 +143,9 @@ function MyReview() {
 
         // 마커 클릭 시 빵집 상세로 이동
         window.kakao.maps.event.addListener(marker, "click", () => {
-          navigate(`/bakery/${review.bakeryId}`);
+          navigate(`/bakery/${review.bakeryId}`, {
+            state: { targetTab: "review" },
+          });
         });
 
         markers.current.push(marker);
@@ -159,7 +161,7 @@ function MyReview() {
 
   const handleReviewClick = (bakeryId) => {
     if (bakeryId) {
-      navigate(`/bakery/${bakeryId}`);
+      navigate(`/bakery/${bakeryId}`, { state: { targetTab: "review" } });
     }
   };
 
@@ -220,12 +222,7 @@ function MyReview() {
                         </div>
                       )}
 
-                      {/* 별점 */}
-                      {review.rating && (
-                        <div className="my-review-rating">
-                          {renderStars(review.rating)}
-                        </div>
-                      )}
+                      {/* 별점 표시 제거 */}
 
                       {/* 리뷰 텍스트 */}
                       {review.text && (

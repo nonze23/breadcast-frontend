@@ -135,7 +135,6 @@ function BakeryReviewWrite({ bakeryId, onCancel, onSubmitSuccess }) {
 
       // 3. 리뷰 생성 요청
       const payload = {
-        rating: 5,
         text: content.trim(),
         photo: imageUrl || null,
       };

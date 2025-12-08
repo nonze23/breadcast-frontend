@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import api from "../api/axiosConfig";
 import BakeryMenu from "../components/BakeryDetail/BakeryMenu";
 import BakeryReview from "../components/BakeryDetail/BakeryReview";
@@ -8,6 +8,7 @@ import "./BakeryDetail.css";
 export default function BakeryDetail() {
   const { bakeryId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const [bakery, setBakery] = useState(null);
   const [menus, setMenus] = useState([]);
   const [reviews, setReviews] = useState([]);
@@ -34,8 +35,14 @@ export default function BakeryDetail() {
         const bakeryData = res.data.data || res.data;
         setBakery(bakeryData);
 
-        if (bakeryData.isFavorited !== undefined) {
-          setIsFavorite(bakeryData.isFavorited);
+        // 서버 응답에 따라 다양한 필드명을 지원 (isFavorited / favorited / is_favorited)
+        const favorited =
+          bakeryData?.isFavorited ??
+          bakeryData?.favorited ??
+          bakeryData?.is_favorited ??
+          bakeryData?.isFavorite;
+        if (favorited !== undefined) {
+          setIsFavorite(Boolean(favorited));
         }
       } catch (err) {
         console.error("빵집 상세 정보 불러오기 실패:", err);
@@ -46,6 +53,13 @@ export default function BakeryDetail() {
     };
     fetchBakeryDetail();
   }, [bakeryId]);
+
+  // 외부에서 탭 지정(state.targetTab)으로 진입한 경우
+  useEffect(() => {
+    if (location.state?.targetTab) {
+      setActiveTab(location.state.targetTab);
+    }
+  }, [location.state]);
 
   // 관심 가게 추가/삭제 처리
   const handleToggleFavorite = async () => {
