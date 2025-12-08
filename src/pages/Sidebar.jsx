@@ -17,6 +17,7 @@ function Sidebar() {
     <aside className="sidebar">
       <div className="logo">
         <img src={logoImg} alt="Breadcast Logo" />
+
         <span>BreadCast</span>
       </div>
 

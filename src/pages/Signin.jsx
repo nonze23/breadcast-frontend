@@ -49,6 +49,19 @@ export default function Signin() {
       //  localStorage에 로그인 정보 저장
       localStorage.setItem("isLoggedIn", "true");
 
+      // ✅ 응답 구조에 따라 nickname 저장
+      // response.data.data.nickname 또는 response.data.nickname
+      const nickname =
+        response.data?.data?.nickname ||
+        response.data?.nickname ||
+        response.data?.data?.nickName ||
+        response.data?.nickName;
+
+      if (nickname) {
+        localStorage.setItem("nickname", nickname);
+        console.log("저장된 닉네임:", nickname);
+      }
+
       // 서버에서 토큰을 응답으로 보내준다면 저장
       if (response.data.accessToken) {
         localStorage.setItem("accessToken", response.data.accessToken);

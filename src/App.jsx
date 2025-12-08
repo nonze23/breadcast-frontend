@@ -13,6 +13,7 @@ import FavoriteStoresPage from "./pages/FavoriteStoresPage";
 import "./App.css";
 import BakeryTour from "./pages/BakeryTour.jsx";
 import BakeryTourForm from "./pages/BakeryTourForm.jsx";
+import MyReview from "./pages/MyReview.jsx";
 
 import "./App.css";
 
@@ -54,10 +55,11 @@ function App() {
           path="/mypage/favorites/store"
           element={<FavoriteStoresPage />}
         />
+        <Route path="/mypage/reviews/store" element={<MyReview />}></Route>
       </Route>
     </Routes>
   );
 }
 
 export default App;
-//        <Route path="/mypage/reviews/store" element={<MyReview />}></Route>
+//

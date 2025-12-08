@@ -1,9 +1,16 @@
 import React, { useEffect, useRef, useState } from "react";
 import { FaPen } from "react-icons/fa";
-import api from "../api/axiosConfig"; // ✅ api import 추가
+import api from "../api/axiosConfig";
 import "./MyPage.css";
 
-const DEFAULT_NICKNAME = "hyexnzzi";
+// ✅ localStorage에서 닉네임 가져오기
+const getStoredNickname = () => {
+  try {
+    return localStorage.getItem("nickname") || "hyexnzzi";
+  } catch {
+    return "hyexnzzi";
+  }
+};
 
 // ✅ MemberAPI를 api 인스턴스 사용하도록 수정
 const MemberAPI = {
@@ -26,9 +33,13 @@ const MemberAPI = {
 function MyPage() {
   const mapRef = useRef(null);
   const [mapError, setMapError] = useState(null);
-  const [nickname, setNickname] = useState(DEFAULT_NICKNAME);
+
+  // ✅ 초기값을 localStorage에서 가져오기
+  const initialNickname = getStoredNickname();
+  const [nickname, setNickname] = useState(initialNickname);
   const [isEditingNickname, setIsEditingNickname] = useState(false);
-  const [tempNickname, setTempNickname] = useState(DEFAULT_NICKNAME);
+  const [tempNickname, setTempNickname] = useState(initialNickname);
+
   const [profileLoading, setProfileLoading] = useState(true);
   const [profileError, setProfileError] = useState(null);
   const [nicknameError, setNicknameError] = useState(null);
@@ -47,9 +58,17 @@ function MyPage() {
         const profileResponseDto = await MemberAPI.getMemberProfile();
         console.log("프로필 응답:", profileResponseDto);
 
-        const nextNickname = profileResponseDto?.nickname ?? DEFAULT_NICKNAME;
-        setNickname(nextNickname);
-        setTempNickname(nextNickname);
+        // ✅ 서버 응답 구조에 맞춰 닉네임 추출
+        // response.data 또는 response.data.data 구조 모두 대응
+        const serverNickname =
+          profileResponseDto?.data?.nickname || profileResponseDto?.nickname;
+
+        if (serverNickname) {
+          setNickname(serverNickname);
+          setTempNickname(serverNickname);
+          // ✅ localStorage도 업데이트
+          localStorage.setItem("nickname", serverNickname);
+        }
       } catch (error) {
         console.error("프로필 불러오기 실패:", error);
 
@@ -78,7 +97,10 @@ function MyPage() {
         const myCoursesDtoList = await MemberAPI.getMyCourses();
         console.log("빵지순례 목록:", myCoursesDtoList);
 
-        setMyCourses(Array.isArray(myCoursesDtoList) ? myCoursesDtoList : []);
+        // ✅ 응답 구조에 맞춰 배열 추출
+        const coursesArray = myCoursesDtoList?.data || myCoursesDtoList || [];
+
+        setMyCourses(Array.isArray(coursesArray) ? coursesArray : []);
       } catch (error) {
         console.error("빵지순례 목록 불러오기 실패:", error);
 
@@ -184,12 +206,19 @@ function MyPage() {
       );
       console.log("닉네임 업데이트 응답:", updatedProfileDto);
 
-      const updatedNickname = updatedProfileDto?.nickname ?? trimmed;
+      // ✅ 응답 구조에 맞춰 닉네임 추출
+      const updatedNickname =
+        updatedProfileDto?.data?.nickname ||
+        updatedProfileDto?.nickname ||
+        trimmed;
 
       setNickname(updatedNickname);
       setTempNickname(updatedNickname);
       setProfileError(null);
       setIsEditingNickname(false);
+
+      // ✅ localStorage에도 업데이트된 닉네임 저장
+      localStorage.setItem("nickname", updatedNickname);
     } catch (error) {
       console.error("닉네임 저장 실패:", error);
 
@@ -322,6 +351,3 @@ function MyPage() {
 }
 
 export default MyPage;
-/*{profileError && !isEditingNickname && (
-                <p className="mypage-inline-error">{profileError}</p>
-              )} */
