@@ -8,11 +8,10 @@ const getBaseURL = () => {
     return "";
   }
 
-  // 프로덕션 환경: 실제 API 서버 주소
-  const baseURL =
-    import.meta.env.VITE_API_BASE_URL || "https://breadcast.duckdns.org";
-  console.log("🚀 프로덕션 환경:", baseURL);
-  return baseURL;
+  // 프로덕션 환경: 빈 값 (vercel.json 프록시 사용)
+  // vercel.json의 rewrites를 통해 /api, /auth 요청이 백엔드로 프록시됨
+  console.log("🚀 프로덕션 환경: vercel.json 프록시 사용");
+  return "";
 };
 
 const api = axios.create({
