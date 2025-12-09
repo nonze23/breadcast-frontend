@@ -396,7 +396,18 @@ export default function BakeryDetail() {
 
           {activeTab === "info" && (
             <div className="info-tab">
-              <p className="empty-message">제보 정보가 없습니다.</p>
+              <div className="info-message">
+                <span className="info-icon">👤</span>
+                <span className="info-text">소금빵 2개 남았어요.</span>
+              </div>
+              <div className="info-message">
+                <span className="info-icon">👤</span>
+                <span className="info-text">제가 마지막 입니다.</span>
+              </div>
+              <div className="info-message">
+                <span className="info-icon">👤</span>
+                <span className="info-text">방금 갓 나온 빵 get했습니다</span>
+              </div>
             </div>
           )}
         </div>
