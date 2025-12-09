@@ -38,6 +38,8 @@ api.interceptors.request.use(
 );
 
 // 응답 인터셉터
+let isRedirecting = false; // 전역 플래그: 중복 리다이렉트 방지
+
 api.interceptors.response.use(
   (response) => {
     console.log("✅ [API 응답]", response.status, response.config.url);
@@ -48,7 +50,19 @@ api.interceptors.response.use(
 
     // 401 Unauthorized - 자동 로그인 페이지 이동
     if (error.response?.status === 401) {
+      // 이미 리다이렉트 중이면 중복 실행 방지
+      if (isRedirecting) {
+        return Promise.reject(error);
+      }
+      
+      isRedirecting = true;
       console.warn("⚠️ 인증 만료 - 로그인 페이지로 이동");
+
+      // 현재 경로가 로그인/회원가입 페이지가 아닐 때만 alert 표시
+      const currentPath = window.location.pathname;
+      if (!currentPath.includes("/signin") && !currentPath.includes("/signup")) {
+        alert("로그인이 필요한 서비스입니다.");
+      }
 
       // localStorage 정리
       localStorage.removeItem("isLoggedIn");
