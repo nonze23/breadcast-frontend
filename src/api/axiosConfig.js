@@ -37,10 +37,9 @@ api.interceptors.request.use(
   }
 );
 
-// 중복 리다이렉트 방지를 위한 플래그
+// 응답 인터셉터 - 중복 리다이렉트 방지 플래그
 let isRedirecting = false;
 
-// 응답 인터셉터
 api.interceptors.response.use(
   (response) => {
     console.log("✅ [API 응답]", response.status, response.config.url);

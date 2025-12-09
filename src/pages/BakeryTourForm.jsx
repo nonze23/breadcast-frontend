@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "./BakeryTourForm.css";
 
@@ -6,6 +6,19 @@ const BakeryTourForm = () => {
   const navigate = useNavigate();
   const { tourId } = useParams();
   const isEditMode = !!tourId;
+
+  // 로그인 체크 중복 알림 방지용 ref
+  const authAlertedRef = useRef(false);
+
+  // 로그인 여부 체크: 미로그인 시 접근 차단
+  useEffect(() => {
+    const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+    if (!isLoggedIn && !authAlertedRef.current) {
+      authAlertedRef.current = true;
+      alert("로그인이 필요한 서비스입니다.");
+      navigate("/signin");
+    }
+  }, [navigate]);
 
   const [formData, setFormData] = useState({
     title: "",
